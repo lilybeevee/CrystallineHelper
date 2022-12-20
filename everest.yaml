@@ -1,0 +1,11 @@
+- Name: CrystallineHelper
+  Version: 1.12.3
+  DLL: Code/bin/vitmod.dll
+  Dependencies:
+    - Name: Everest
+      Version: 1.2002.0
+  OptionalDependencies:
+    - Name: FrostHelper
+      Version: 1.21.2
+    - Name: VivHelper
+      Version: 1.5.4
