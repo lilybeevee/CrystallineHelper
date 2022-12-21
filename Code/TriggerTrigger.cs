@@ -1,14 +1,10 @@
 ﻿using Celeste;
 using Celeste.Mod.Entities;
-using MonoMod.Utils;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace vitmod
 {
@@ -18,15 +14,23 @@ namespace vitmod
     {
         public static void Load()
         {
+            On.Celeste.Level.LoadLevel += Level_LoadLevel;
             On.Celeste.Player.Jump += Player_Jump;
             On.Celeste.PlayerCollider.Check += PlayerCollider_Check;
         }
 
         public static void Unload()
         {
+            On.Celeste.Level.LoadLevel -= Level_LoadLevel;
             On.Celeste.Player.Jump -= Player_Jump;
             On.Celeste.PlayerCollider.Check -= PlayerCollider_Check;
         }
+
+        private static readonly HashSet<Entity> collidedEntities = new();
+        private static readonly Dictionary<string, int> collideTracker = new();
+        private static bool hasOnEntityCollide;
+
+        private readonly string collideType;
 
         public TriggerTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
@@ -52,14 +56,16 @@ namespace vitmod
             coreMode = data.Enum("coreMode", Session.CoreModes.None);
             if (string.IsNullOrEmpty(data.Attr("entityType", "")))
             {
-                collideEnity = data.Attr("entityTypeToCollide", "Celeste.Strawberry");
+                collideType = data.Attr("entityTypeToCollide", "Celeste.Strawberry");
             }
             else
             {
-                collideEnity = data.Attr("entityType", "");
+                collideType = data.Attr("entityType", "");
             }
             collideCount = data.Int("collideCount", 1);
-            entitiesTouched = new List<Entity>();
+            if (activationType == ActivationTypes.OnEntityCollide) {
+                hasOnEntityCollide = true;
+            }
             collideSolid = data.Attr("solidType", "");
             entitiesInside = new List<Entity>();
             Add(new HoldableCollider((Holdable holdable) => {
@@ -307,7 +313,7 @@ namespace vitmod
                     result = player.SceneAs<Level>().CoreMode == coreMode;
                     break;
                 case ActivationTypes.OnEntityCollide:
-                    result = Compare(collideEntityCount, collideCount);
+                    result = collideTracker.ContainsKey(collideType) && Compare(collideTracker[collideType], collideCount);
                     break;
                 case ActivationTypes.OnSolid:
                     Rectangle playerCollision = player.Collider.Bounds;
@@ -331,7 +337,7 @@ namespace vitmod
                 case ActivationTypes.OnEntityEnter:
                     foreach (Entity entity in Scene.Entities)
                     {
-                        if (entity.CollideCheck(this) && VitModule.GetClassName(collideEnity, entity))
+                        if (entity.CollideCheck(this) && VitModule.GetClassName(collideType, entity))
                         {
                             result = true;
                             break;
@@ -493,27 +499,32 @@ namespace vitmod
             yield break;
         }
 
+        private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
+            hasOnEntityCollide = false;
+            collidedEntities.Clear();
+            collideTracker.Clear();
+            orig(self, playerIntro, isFromLoader);
+        }
+
         private static bool PlayerCollider_Check(On.Celeste.PlayerCollider.orig_Check orig, PlayerCollider self, Player player)
         {
             bool result = orig(self, player);
 
-            Entity entity = self.Entity;
-            foreach (TriggerTrigger trigger in self.SceneAs<Level>().Tracker.GetEntities<TriggerTrigger>())
-            {
-                if (result)
-                {
-                    if (trigger.activationType == ActivationTypes.OnEntityCollide && VitModule.GetClassName(trigger.collideEnity, entity))
-                    {
-                        if (!trigger.entitiesTouched.Contains(entity))
-                        {
-                            trigger.entitiesTouched.Add(entity);
-                            trigger.collideEntityCount++;
+            if (hasOnEntityCollide) {
+                if (result) {
+                    if (collidedEntities.Add(self.Entity)) {
+                        Type type = self.Entity.GetType();
+                        string fullName = type.FullName;
+                        if (!collideTracker.ContainsKey(type.Name)) {
+                            collideTracker[type.Name] = 0;
+                            collideTracker[fullName] = 0;
                         }
+
+                        collideTracker[type.Name]++;
+                        collideTracker[fullName]++;
                     }
-                }
-                else if (trigger.entitiesTouched.Contains(entity))
-                {
-                    trigger.entitiesTouched.Remove(entity);
+                } else {
+                    collidedEntities.Remove(self.Entity);
                 }
             }
 
@@ -532,10 +543,7 @@ namespace vitmod
         private float requiredSpeed;
         private float waitTime;
         private float hasWaited;
-        public string collideEnity;
-        public int collideEntityCount;
         private int collideCount;
-        public List<Entity> entitiesTouched;
         private Session.CoreModes coreMode;
         private List<Entity> entitiesInside;
         private string collideSolid;
