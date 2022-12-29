@@ -171,6 +171,13 @@ placements.entities.vitellary/cassetteflags.tooltips.pinkFlag=The flag to enable
 placements.entities.vitellary/cassetteflags.tooltips.yellowFlag=The flag to enable while the cassette cycle is yellow.
 placements.entities.vitellary/cassetteflags.tooltips.greenFlag=The flag to enable while the cassette cycle is green.
 
+# Flag Sequence On Spawn Controller
+placements.entities.vitellary/flagsequencecontroller.tooltips.startNumber=The first number to start the sequence.
+placements.entities.vitellary/flagsequencecontroller.tooltips.endNumber=The final number in the sequence.
+placements.entities.vitellary/flagsequencecontroller.tooltips.prefix=The text that prefixes each flag set. For example, prefix "flagname" with Start Number 8 and End Number 11 will set "flagname_08", "flagname_09", "flagname_10", and "flagname_11" all to the specified state.
+placements.entities.vitellary/flagsequencecontroller.tooltips.state=The state to set all of the flags to.
+placements.entities.vitellary/flagsequencecontroller.tooltips.onlyOnRespawn=Whether the flag should only be set when respawning in the room, and not entering it.
+
 # Custom Prologue Bridge and Activator
 placements.entities.vitellary/customprologuebridge.tooltips.activationID=The ID used in the Activator to begin crumbling the bridge. Do not reuse IDs throughout the level!
 placements.entities.vitellary/customprologuebridge.tooltips.activationIndex=Used to determine the order the bridges should fall. 0 is the first bridge that collapses.

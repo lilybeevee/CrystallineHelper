@@ -280,6 +280,7 @@ namespace vitmod
             TimeCrystal.Load();
             TimeFadeTrigger.Load();
             KaizoBlock.Load();
+            FlagSequenceController.Load();
 
             BombTimerTrigger.Load();
             CustomPuffer.Load();
@@ -781,6 +782,8 @@ namespace vitmod
             TimeCrystal.Unload();
             TimeFadeTrigger.Unload();
             KaizoBlock.Unload();
+            FlagSequenceController.Unload();
+            
             BombTimerTrigger.Unload();
             CustomPuffer.Unload();
             DeadlyDashSwitch.Unload();
@@ -791,7 +794,7 @@ namespace vitmod
             PairedDashSwitch.Unload();
             TempleGateAllSwitches.Unload();
             TriggerBeam.Unload();
-
+            
             On.Celeste.Level.Update -= Level_Update;
             IL.Monocle.EntityList.Update -= EntityList_Update;
             IL.Monocle.RendererList.Update -= RendererList_Update;

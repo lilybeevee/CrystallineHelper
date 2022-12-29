@@ -19,7 +19,8 @@ flagSequenceController.placements = {
             prefix = "",
             state = false,
             startNumber = 1,
-            endNumber = 99
+            endNumber = 99,
+            onlyOnRespawn = false,
         }
     }
 }
