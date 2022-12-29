@@ -3,7 +3,7 @@ module SetFlagSequenceController
 using ..Ahorn, Maple
 
 @mapdef Entity "vitellary/flagsequencecontroller" Controller(x::Integer, y::Integer,
-    prefix::String="", state::Bool=false, startNumber::Integer=1, endNumber::Integer=99)
+    prefix::String="", state::Bool=false, startNumber::Integer=1, endNumber::Integer=99, onlyOnRespawn::Bool=false)
 
 const placements = Ahorn.PlacementDict(
     "Set Flag Sequence On Spawn Controller (Crystalline)" => Ahorn.EntityPlacement(

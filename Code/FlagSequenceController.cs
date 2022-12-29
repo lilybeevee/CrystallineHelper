@@ -23,7 +23,7 @@ namespace vitmod
 				LevelLoader levelLoader = Engine.Scene as LevelLoader;
 				level = (levelLoader != null) ? levelLoader.Level : null;
 			}
-			if (level != null)
+			if (level != null && (!data.Bool("onlyOnRespawn") || respawning))
 			{
 				string prefix = data.Attr("prefix", "");
 				if (!string.IsNullOrEmpty(prefix))
@@ -49,5 +49,21 @@ namespace vitmod
 			base.Added(scene);
 			RemoveSelf();
 		}
+
+        public static bool respawning;
+
+        public static void Load() {
+            On.Celeste.Level.LoadLevel += Level_LoadLevel;
+        }
+
+        public static void Unload() {
+            On.Celeste.Level.LoadLevel -= Level_LoadLevel;
+        }
+
+        private static void Level_LoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
+            respawning = playerIntro > Player.IntroTypes.Transition;
+            orig(self, playerIntro, isFromLoader);
+            respawning = false;
+        }
     }
 }

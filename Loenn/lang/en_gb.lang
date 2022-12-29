@@ -202,3 +202,4 @@ entities.vitellary/flagsequencecontroller.attributes.description.startNumber=The
 entities.vitellary/flagsequencecontroller.attributes.description.endNumber=The final number in the sequence.
 entities.vitellary/flagsequencecontroller.attributes.description.prefix=The text that prefixes each flag set. For example, prefix "flagname" with Start Number 8 and End Number 11 will set "flagname_08", "flagname_09", "flagname_10", and "flagname_11" all to the specified state.
 entities.vitellary/flagsequencecontroller.attributes.description.state=The state to set all of the flags to.
+entities.vitellary/flagsequencecontroller.attributes.description.onlyOnRespawn=Whether the flag should only be set when respawning in the room, and not entering it.

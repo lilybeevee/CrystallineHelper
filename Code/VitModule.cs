@@ -270,6 +270,7 @@ namespace vitmod
             TimeCrystal.Load();
             TimeFadeTrigger.Load();
             KaizoBlock.Load();
+            FlagSequenceController.Load();
 
 
             //timestuff
@@ -760,6 +761,7 @@ namespace vitmod
             TimeCrystal.Unload();
             TimeFadeTrigger.Unload();
             KaizoBlock.Unload();
+            FlagSequenceController.Unload();
             On.Celeste.Level.Update -= Level_Update;
             IL.Monocle.EntityList.Update -= EntityList_Update;
             IL.Monocle.RendererList.Update -= RendererList_Update;

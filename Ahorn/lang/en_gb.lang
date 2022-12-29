@@ -128,3 +128,4 @@ placements.entities.vitellary/flagsequencecontroller.tooltips.startNumber=The fi
 placements.entities.vitellary/flagsequencecontroller.tooltips.endNumber=The final number in the sequence.
 placements.entities.vitellary/flagsequencecontroller.tooltips.prefix=The text that prefixes each flag set. For example, prefix "flagname" with Start Number 8 and End Number 11 will set "flagname_08", "flagname_09", "flagname_10", and "flagname_11" all to the specified state.
 placements.entities.vitellary/flagsequencecontroller.tooltips.state=The state to set all of the flags to.
+placements.entities.vitellary/flagsequencecontroller.tooltips.onlyOnRespawn=Whether the flag should only be set when respawning in the room, and not entering it.
