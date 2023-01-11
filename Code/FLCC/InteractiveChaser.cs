@@ -1,20 +1,25 @@
 ﻿using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
+using Mono.Cecil.Cil;
 using Monocle;
+using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Platform = Celeste.Platform;
 
 namespace vitmod
 {
 	[Tracked]
 	[CustomEntity("vitellary/interactivechaser")]
-    public class InteractiveChaser : Entity
-    {
+	public class InteractiveChaser : Entity
+	{
 		public static readonly Color HairColor = Calc.HexToColor("9B3FB5");
 
 		public PlayerSprite Sprite;
@@ -54,7 +59,7 @@ namespace vitmod
 			hoveringTimer = 0f;
 			loopingSounds = new Dictionary<string, SoundSource>();
 			inactiveLoopingSounds = new List<SoundSource>();
-			Depth = -1;
+			Depth = -2;
 			Collider = new Hitbox(6f, 6f, -3f, mirror.Y == 1f ? -7f : 1f);
 			Collidable = false;
 			Sprite = new PlayerSprite(PlayerSpriteMode.Badeline);
@@ -178,7 +183,7 @@ namespace vitmod
 				Sprite.X = (float)(Math.Sin(hoveringTimer) * 4.0);
 				Hovering = true;
 				hoveringTimer += Engine.DeltaTime * 2f;
-				base.Depth = -12500;
+				Depth = -12500;
 				foreach (KeyValuePair<string, SoundSource> loopingSound in loopingSounds)
 				{
 					loopingSound.Value.Stop();
@@ -237,7 +242,7 @@ namespace vitmod
 					}
 				}
 
-				Depth = chaseState.Depth;
+				Depth = chaseState.Depth - 2;
 				Trail();
 			}
 			if (Sprite.Scale.X != 0f)
@@ -337,14 +342,20 @@ namespace vitmod
 			return (pos - levelCenter) * mirror + levelCenter;
 		}
 
+
+		private static ILHook playerOrigUpdateHook;
+
 		public static void Load()
 		{
 			On.Celeste.Player.ctor += Player_ctor;
 			On.Celeste.Player.Die += Player_Die;
 			On.Celeste.Player.Update += Player_Update;
-			On.Celeste.Actor.Update += Actor_Update;
+			//On.Celeste.Actor.Update += Actor_Update;
 			On.Celeste.Player.UpdateChaserStates += Player_UpdateChaserStates;
 			On.Celeste.Player.OnTransition += Player_OnTransition;
+			
+			playerOrigUpdateHook = new ILHook(typeof(Player).GetMethod("orig_Update", BindingFlags.Public | BindingFlags.Instance), Player_orig_Update);
+			playerOrigUpdateHook.Apply();
 		}
 
 		public static void Unload()
@@ -352,9 +363,11 @@ namespace vitmod
 			On.Celeste.Player.ctor -= Player_ctor;
 			On.Celeste.Player.Die -= Player_Die;
 			On.Celeste.Player.Update -= Player_Update;
-			On.Celeste.Actor.Update -= Actor_Update;
+			//On.Celeste.Actor.Update -= Actor_Update;
 			On.Celeste.Player.UpdateChaserStates -= Player_UpdateChaserStates;
 			On.Celeste.Player.OnTransition -= Player_OnTransition;
+			
+			playerOrigUpdateHook.Dispose();
 		}
 
 		private static void PlayerDeadBody_ctor(On.Celeste.PlayerDeadBody.orig_ctor orig, PlayerDeadBody self, Player player, Vector2 direction)
@@ -374,18 +387,37 @@ namespace vitmod
 			orig(self);
 		}
 
-		private static void Actor_Update(On.Celeste.Actor.orig_Update orig, Actor self)
-		{
-			orig(self);
-			if (self is Player)
-			{
-				var player = self as Player;
+		private static void Player_orig_Update(ILContext il) {
+			ILCursor cursor = new ILCursor(il);
+
+			if (!cursor.TryGotoNext(MoveType.After,
+				instr => instr.MatchLdfld<Player>("onCollideH"),
+				instr => instr.MatchLdnull(),
+				instr => instr.MatchCall<Actor>("MoveH"))) {
+
+				return;
+			}
+
+			if (!cursor.TryGotoPrev(MoveType.AfterLabel,
+				instr => instr.MatchLdarg(0),
+				instr => instr.MatchLdfld<Player>("StateMachine"),
+				instr => instr.MatchCallvirt<StateMachine>("get_State"),
+				instr => instr.MatchLdcI4(9))) {
+
+				return;
+			}
+
+			Logger.Log("CrystallineHelper", "Adding Player.orig_Update IL hook for InteractiveChaser");
+
+			cursor.Emit(OpCodes.Ldarg_0);
+			cursor.EmitDelegate<Action<Player>>(player => {
 				var playerData = new DynData<Player>(player);
 				playerData.Set("vitellaryChaserPosition", player.Position);
+				playerData.Set("vitellaryChaserMovementCounter", new DynData<Actor>(player).Get<Vector2>("movementCounter"));
 				playerData.Set("vitellaryChaserSpeed", player.Speed);
 				if (player.DashAttacking && player.Speed.Length() > 0f)
 					playerData.Set("vitellaryChaserDashed", player.DashDir);
-			}
+			});
 		}
 
 		private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
@@ -446,13 +478,15 @@ namespace vitmod
 			public GrabState GrabState { get; set; }
 			public int State { get; set; }
 			public string[] Blacklist { get; set; }
-
+			
 			private DynData<Player> baseData;
+			private DynData<Actor> actorData;
 			private List<Component> newComponents;
 
 			public DummyPlayer(Vector2 position, Vector2 mirror, string[] blacklist) : base(position, PlayerSpriteMode.Badeline)
 			{
 				baseData = new DynData<Player>(this);
+				actorData = new DynData<Actor>(this);
 				var hitboxes = new string[] { "normalHitbox", "duckHitbox", "normalHurtbox", "duckHurtbox" };
 				foreach (var hitboxName in hitboxes)
 				{
@@ -496,18 +530,21 @@ namespace vitmod
 
 			public void UpdateState(InteractiveChaser.ChaserState state)
 			{
-				baseData.Set("dashAttackTimer", DashDir != Vector2.Zero ? 1f : 0f);
 				Ducking = state.Ducking;
 				GrabState = state.GrabState;
 				Facing = state.Facing;
 				DashDir = state.DashDir;
+				baseData.Set("dashAttackTimer", DashDir != Vector2.Zero ? 1f : 0f);
 				if (DashDir != Vector2.Zero)
 				{
-					MoveToX(state.EarlyPosition.X + (state.Speed.X * Engine.DeltaTime), OnCollideH);
-					MoveToY(state.EarlyPosition.Y + (state.Speed.Y * Engine.DeltaTime), OnCollideV);
+					Position = state.EarlyPosition;
+					actorData.Set("movementCounter", state.MovementCounter);
+					MoveH(state.Speed.X * state.DeltaTime, OnCollideH);
+					MoveV(state.Speed.Y * state.DeltaTime, OnCollideV);
 				}
 				State = state.State;
 				Position = state.Position;
+				Depth = state.Depth - 1;
 
 				if (GrabState == GrabState.Held)
 					StateMachine.State = 1;
@@ -560,13 +597,13 @@ namespace vitmod
 
 			private void OnCollideH(CollisionData data)
 			{
-				if (data.Hit != null && data.Direction.X == Math.Sign(DashDir.X) && !Blacklist.Any((s) => s == data.Hit.GetType().Name))
+				if (DashAttacking && data.Hit != null && data.Direction.X == Math.Sign(DashDir.X) && !Blacklist.Any((s) => s == data.Hit.GetType().Name))
 					data.Hit.OnDashCollide?.Invoke(this, data.Direction);
 			}
 
 			private void OnCollideV(CollisionData data)
 			{
-				if (data.Hit != null && data.Direction.Y == Math.Sign(DashDir.Y) && !Blacklist.Any((s) => s == data.Hit.GetType().Name))
+				if (DashAttacking && data.Hit != null && data.Direction.Y == Math.Sign(DashDir.Y) && !Blacklist.Any((s) => s == data.Hit.GetType().Name))
 					data.Hit.OnDashCollide?.Invoke(this, data.Direction);
 			}
 
@@ -583,6 +620,7 @@ namespace vitmod
 			public Vector2 Bottom;
 			public Vector2 Position;
 			public Vector2 EarlyPosition;
+			public Vector2 MovementCounter;
 			public float TimeStamp;
 			public string Animation;
 			public Facings Facing;
@@ -592,6 +630,7 @@ namespace vitmod
 			public Vector2 Scale;
 			public Vector2 Speed;
 			public Vector2 DashDir;
+			public float DeltaTime;
 			public bool Ducking;
 			public int State;
 			public GrabState GrabState;
@@ -640,8 +679,10 @@ namespace vitmod
 				Depth = player.Depth;
 				Scale = new Vector2(Math.Abs(player.Sprite.Scale.X) * (float)player.Facing, player.Sprite.Scale.Y);
 				EarlyPosition = playerData.Get<Vector2>("vitellaryChaserPosition");
+				MovementCounter = playerData.Get<Vector2>("vitellaryChaserMovementCounter");
 				Speed = playerData.Get<Vector2>("vitellaryChaserSpeed");
 				DashDir = playerData.Get<Vector2>("vitellaryChaserDashed");
+				DeltaTime = Engine.DeltaTime;
 				Ducking = player.Ducking;
 				State = player.StateMachine.State;
 				GrabState = player.Ducking ? GrabState.Drop : ((Input.Grab.Check && DashDir == Vector2.Zero) ? GrabState.Held : (Input.MoveY == 1 ? GrabState.Drop : GrabState.None));
@@ -660,6 +701,7 @@ namespace vitmod
 
 				newState.Position = MirrorPos(Position, level, scales);
 				newState.EarlyPosition = MirrorPos(EarlyPosition, level, scales);
+				newState.MovementCounter *= scales;
 				newState.Speed *= scales;
 				newState.DashDir *= scales;
 				newState.Facing = (Facings)((int)Facing * (int)scales.X);
