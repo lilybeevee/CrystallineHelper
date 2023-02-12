@@ -45,7 +45,8 @@ editDepthTrigger.placements = {
             depth = -9000,
             entitiesToAffect = "Celeste.MoveBlock",
             debug = false,
-            updateOnEntry = false
+            updateOnEntry = false,
+            cacheValidEntities = true,
         }
     }
 }
