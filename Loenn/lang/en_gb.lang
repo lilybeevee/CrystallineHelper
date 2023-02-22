@@ -344,6 +344,7 @@ triggers.vitellary/editdepthtrigger.attributes.description.depth=New depth to se
 triggers.vitellary/editdepthtrigger.attributes.description.entitiesToAffect=The class name of the entity to alter. Can be a comma separated list of multiple entity types as well.
 triggers.vitellary/editdepthtrigger.attributes.description.debug=If true, then Celeste will write the names of all entities touching the trigger in the log (can be seen in log.txt immediately), as well as their current depths. Useful to figure out the names of the entities you'd like to affect, though remember to disable the option later.
 triggers.vitellary/editdepthtrigger.attributes.description.updateOnEntry=If true, the trigger will affect entities that move into it; otherwise, it will only affect entities that are touching it when the room loads.
+triggers.vitellary/editdepthtrigger.attributes.description.cacheValidEntities=If 'Update On Entry' is enabled, then all entities that pass the type filter will get cached, massively improving performance.\nOnly disable if you want to edit the depth of entities that get dynamically added to the level after its loaded, like debris.
 
 # Bloom Strength Trigger
 triggers.vitellary/bloomstrengthtrigger.attributes.description.bloomStrengthFrom=Determines where the bloom strength starts.

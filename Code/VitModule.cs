@@ -264,6 +264,7 @@ namespace vitmod
                 Version = new Version(1, 5, 4)
             });
 
+            TypeHelper.Load();
             NoJumpTrigger.Load();
             NoDashTrigger.Load();
             NoGrabTrigger.Load();
@@ -766,6 +767,8 @@ namespace vitmod
 
         public override void Unload()
         {
+            TypeHelper.Unload();
+
             NoJumpTrigger.Unload();
             NoDashTrigger.Unload();
             NoGrabTrigger.Unload();

@@ -4,9 +4,6 @@ using Microsoft.Xna.Framework;
 using Monocle;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace vitmod
 {
@@ -16,9 +13,11 @@ namespace vitmod
         public EditDepthTrigger(EntityData data, Vector2 offset) : base(data, offset)
         {
             newDepth = data.Int("depth", 0);
-            entityNames = data.Attr("entitiesToAffect", "").Split(',');
+            affectedTypes = TypeHelper.ParseTypeList(data.Attr("entitiesToAffect", ""));
             debug = data.Bool("debug", false);
             update = data.Bool("updateOnEntry", false);
+            if (update && data.Bool("cacheValidEntities", false)) // Should default to 'true' in editors
+                validEntitiesCache = new();
         }
 
         public override void Added(Scene scene)
@@ -26,16 +25,10 @@ namespace vitmod
             base.Added(scene);
             foreach (Entity entity in scene.Entities)
             {
-                if (entity.CollideCheck(this))
-                {
-                    if (entityNames.Contains(entity.GetType().FullName) || entityNames.Contains(entity.GetType().Name))
-                    {
-                        entity.Depth = newDepth;
-                    }
-                    if (debug)
-                    {
-                        Console.WriteLine(entity.GetType().FullName + ": " + entity.Depth);
-                    }
+                HandleEntity(entity, fillCache: true);
+
+                if (debug && entity.CollideCheck(this)) {
+                    Console.WriteLine(entity.GetType().FullName + ": " + entity.Depth);
                 }
             }
         }
@@ -43,23 +36,37 @@ namespace vitmod
         public override void Update()
         {
             base.Update();
-            if (update)
-            {
-                foreach (Entity entity in Scene.Entities)
-                {
-                    if (entity.CollideCheck(this))
-                    {
-                        if (entityNames.Contains(entity.GetType().FullName) || entityNames.Contains(entity.GetType().Name))
-                        {
-                            entity.Depth = newDepth;
-                        }
-                    }
+            if (!update) {
+                return;
+            }
+
+            if (validEntitiesCache is { } cache) {
+                foreach (Entity entity in cache) {
+                    HandleEntity(entity, fillCache: false);
+                }
+            } else {
+                foreach (Entity entity in Scene.Entities) {
+                    HandleEntity(entity, fillCache: false);
                 }
             }
         }
 
+        private void HandleEntity(Entity entity, bool fillCache) {
+            if (affectedTypes.Contains(entity.GetType())) {
+                if (fillCache) {
+                    validEntitiesCache?.Add(entity);
+                }
+
+                if (entity.CollideCheck(this)) {
+                    entity.Depth = newDepth;
+                }
+            }
+        }
+
+        private HashSet<Type> affectedTypes;
+        private List<Entity> validEntitiesCache;
+
         private int newDepth;
-        private string[] entityNames;
         private bool debug;
         private bool update;
     }
