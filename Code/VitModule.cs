@@ -479,7 +479,7 @@ namespace vitmod
 
                         var timeStopCheck = useTimeStopDelta && !(entity is Player || entity is PlayerDeadBody
                             || entity is TimeCrystal || entity is CrystalStaticSpinner || entity is DustStaticSpinner
-                            || entity is Lookout || entity is FakeWall);
+                            || entity is Lookout || entity is FakeWall || entity is GameplayStats);
                         if (frostHelperLoaded) {
                             timeStopCheck = timeStopCheck && !IsFrostHelperSpinner(entity);
                         }
