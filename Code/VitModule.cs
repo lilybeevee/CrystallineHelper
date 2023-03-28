@@ -340,7 +340,7 @@ namespace vitmod
                             {
                                 TimeCrystal.stopTimer = 2f;
                                 TimeCrystal.stopStage = 2;
-                                timeStopScaleTimer = TimeCrystal.timeScaleToSet;
+                                timeStopScaleTimer = 1f;
                             }
                             else if (TimeCrystal.stopStage == 2)
                             {
@@ -365,35 +365,27 @@ namespace vitmod
                             TimeCrystal.stopTimer = 2f;
                             TimeCrystal.stopStage = 2;
                             timeStopType = TimeCrystal.freezeTypes.Timer; //hacky thing to get it to resume time normally
-                            timeStopScaleTimer = TimeCrystal.timeScaleToSet;
+                            timeStopScaleTimer = 1f;
                         }
                     }
                 }
             }
 
-            if (TimeCrystal.stopStage > 0)
-            {
+            if (TimeCrystal.stopStage > 0) {
+                float timestop_delta_mult;
                 if (!self.Paused)
                 {
-                    if (TimeCrystal.timeScaleToSet < 1)
+                    if (Math.Abs(timeStopScale) <= 1f && timeStopScale != 1f)
                     {
-                        timeStopScaleTimer += Engine.DeltaTime;
+                        // Legacy behavior for timescales between -1 and 1 (longer to approach based on distance from 1)
+                        timeStopScaleTimer = Calc.Approach(timeStopScaleTimer, TimeCrystal.stopStage == 1 ? 1f : 0f, Engine.DeltaTime * 2f / Math.Abs(1 - timeStopScale));
                     }
                     else
                     {
-                        timeStopScaleTimer -= Engine.DeltaTime;
+                        timeStopScaleTimer = Calc.Approach(timeStopScaleTimer, TimeCrystal.stopStage == 1 ? 1f : 0f, Engine.DeltaTime * 2f);
                     }
                 }
-
-                float timestop_delta_mult = 1;
-                if (TimeCrystal.stopStage == 1)
-                {
-                    timestop_delta_mult = Math.Max(TimeCrystal.timeScaleToSet, 1 - (timeStopScaleTimer / 0.5f));
-                }
-                else if (TimeCrystal.stopStage == 2)
-                {
-                    timestop_delta_mult = Math.Min(1, timeStopScaleTimer / 0.5f);
-                }
+                timestop_delta_mult = MathHelper.Lerp(1f, timeStopScale, timeStopScaleTimer);
 
                 if (timestop_delta_mult != 1)
                 {
@@ -765,6 +757,31 @@ namespace vitmod
             return entity.GetType().FullName == name || entity.GetType().Name == name;
         }
 
+        public static void TimeStop(float duration = 0f, bool immediate = true, TimeCrystal.freezeTypes type = TimeCrystal.freezeTypes.Timer, float timeScale = 0f, string[] ignoredEntities = null) {
+            TimeCrystal.stopStage = 1;
+            TimeCrystal.entitiesToIgnore = ignoredEntities ?? new string[0];
+            timeStopScale = timeScale;
+            if (type == TimeCrystal.freezeTypes.Timer) {
+                TimeCrystal.stopTimer = duration;
+            }
+            timeStopType = type;
+            if (immediate) {
+                timeStopScaleTimer = 1f;
+            }
+        }
+
+        public static void TimeResume(bool immediate = false) {
+            if (immediate) {
+                TimeCrystal.stopTimer = 0f;
+                TimeCrystal.stopStage = 0;
+                timeStopScaleTimer = 0f;
+            } else if (TimeCrystal.stopStage == 1) {
+                TimeCrystal.stopTimer = 2f;
+                TimeCrystal.stopStage = 2;
+                timeStopScaleTimer = 1f;
+            }
+        }
+
         public override void Unload()
         {
             TypeHelper.Unload();
@@ -823,6 +840,21 @@ namespace vitmod
         private float timeStopRawDelta;
 
         public static TimeCrystal.freezeTypes timeStopType;
+
+        public static float timeStopScale;
+
+        public static bool timeStopped {
+            get {
+                return TimeCrystal.stopStage == 1;
+            }
+            set {
+                if (value) {
+                    TimeStop();
+                } else {
+                    TimeResume();
+                }
+            }
+        }
 
         public static Dictionary<string, Ease.Easer> EaseTypes = new Dictionary<string, Ease.Easer>
         {

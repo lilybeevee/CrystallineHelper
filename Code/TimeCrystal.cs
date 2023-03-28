@@ -157,7 +157,7 @@ namespace vitmod
                 {
                     stopTimer = stopLength;
                 }
-                timeScaleToSet = privateTimeScale;
+                VitModule.timeStopScale = privateTimeScale;
                 VitModule.timeStopScaleTimer = immediate ? 1f : 0f;
                 stopStage = 1;
             }
@@ -228,8 +228,6 @@ namespace vitmod
         private float privateTimeScale;
 
         public static string[] entitiesToIgnore;
-
-        public static float timeScaleToSet = 0f;
 
         public static ParticleType P_Shatter;
 

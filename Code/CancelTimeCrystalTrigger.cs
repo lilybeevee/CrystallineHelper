@@ -23,7 +23,7 @@ namespace vitmod
             TimeCrystal.stopTimer = 2f;
             TimeCrystal.stopStage = 2;
             VitModule.timeStopType = TimeCrystal.freezeTypes.Timer; //hacky thing to get it to resume time normally
-            VitModule.timeStopScaleTimer = TimeCrystal.timeScaleToSet;
+            VitModule.timeStopScaleTimer = 1f;
         }
     }
 }
