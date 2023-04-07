@@ -57,6 +57,7 @@ namespace vitmod
 		private bool switchCoreMode;
 		private bool colorGrade;
 		private bool isStatic;
+        private bool cutscene;
 
 		private EntityID entityID;
 		private Sprite sprite;
@@ -100,6 +101,7 @@ namespace vitmod
 			switchCoreMode = data.Bool("switchCoreMode");
 			colorGrade = data.Bool("colorGrade");
 			isStatic = data.Bool("static");
+            cutscene = data.Bool("poemCutscene", true);
 
 			autoPulse = true;
 			walls = new List<InvisibleBarrier>();
@@ -477,74 +479,80 @@ namespace vitmod
 			{
 				yield return 100f;
 			}
-			Engine.TimeRate = 1f;
-			Tag = Tags.FrozenUpdate;
-			level.Frozen = true;
-			if (endLevel)
-			{
-				RegisterAsCollected(level);
-				level.TimerStopped = true;
-				level.RegisterAreaComplete();
-			}
-			string poemText = null;
-			if (!string.IsNullOrEmpty(poemId))
-			{
-				poemText = Dialog.Clean("poem_" + poemId);
-			}
-			int heartIndex;
-			switch (spriteType)
-			{
-				default:
-					heartIndex = 3; break;
-				case SpriteType.Blue:
-					heartIndex = 0; break;
-				case SpriteType.Red:
-					heartIndex = 1; break;
-				case SpriteType.Gold:
-					heartIndex = 2; break;
-				case SpriteType.Core:
-					heartIndex = (level.CoreMode == Session.CoreModes.Cold ? 0 : 1); break;
-				case SpriteType.CoreInverted:
-					heartIndex = (level.CoreMode == Session.CoreModes.Cold ? 1 : 0); break;
-			}
-			poem = new Poem(poemText, heartIndex, 0.8f);
-			poem.Alpha = 0f;
-			Scene.Add(poem);
-			if (spriteType == SpriteType.Custom)
-			{
-				poem.Heart.SetColor(Calc.HexToColor(spriteColor));
-			}
-			for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime)
-			{
-				poem.Alpha = Ease.CubeOut(t2);
-				yield return null;
-			}
-			while (!Input.MenuConfirm.Pressed && !Input.MenuCancel.Pressed)
-			{
-				yield return null;
-			}
-			sfx.Source.Param("end", 1f);
-			if (!endLevel)
-			{
-				level.FormationBackdrop.Display = false;
-				for (float t = 0f; t < 1f; t += Engine.RawDeltaTime * 2f)
-				{
-					poem.Alpha = Ease.CubeIn(1f - t);
-					yield return null;
-				}
-				player.Depth = 0;
-				EndCutscene();
-				PostCollect();
-			}
-			else
-			{
-				yield return new FadeWipe(level, wipeIn: false)
-				{
-					Duration = 3.25f
-				}.Duration;
-				level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: false);
-			}
-		}
+            if (cutscene) {
+                Engine.TimeRate = 1f;
+                Tag = Tags.FrozenUpdate;
+                level.Frozen = true;
+                if (endLevel) {
+                    RegisterAsCollected(level);
+                    level.TimerStopped = true;
+                    level.RegisterAreaComplete();
+                }
+                string poemText = null;
+                if (!string.IsNullOrEmpty(poemId)) {
+                    poemText = Dialog.Clean("poem_" + poemId);
+                }
+                int heartIndex;
+                switch (spriteType) {
+                    default:
+                        heartIndex = 3;
+                        break;
+                    case SpriteType.Blue:
+                        heartIndex = 0;
+                        break;
+                    case SpriteType.Red:
+                        heartIndex = 1;
+                        break;
+                    case SpriteType.Gold:
+                        heartIndex = 2;
+                        break;
+                    case SpriteType.Core:
+                        heartIndex = (level.CoreMode == Session.CoreModes.Cold ? 0 : 1);
+                        break;
+                    case SpriteType.CoreInverted:
+                        heartIndex = (level.CoreMode == Session.CoreModes.Cold ? 1 : 0);
+                        break;
+                }
+                poem = new Poem(poemText, heartIndex, 0.8f);
+                poem.Alpha = 0f;
+                Scene.Add(poem);
+                if (spriteType == SpriteType.Custom) {
+                    poem.Heart.SetColor(Calc.HexToColor(spriteColor));
+                }
+                for (float t2 = 0f; t2 < 1f; t2 += Engine.RawDeltaTime) {
+                    poem.Alpha = Ease.CubeOut(t2);
+                    yield return null;
+                }
+                while (!Input.MenuConfirm.Pressed && !Input.MenuCancel.Pressed) {
+                    yield return null;
+                }
+            }
+            sfx.Source.Param("end", 1f);
+            if (!endLevel) {
+                level.FormationBackdrop.Display = false;
+                if (!cutscene) {
+                    Audio.Play("event:/game/general/diamond_return", Position);
+                    player.Depth = 0;
+                    while (Engine.TimeRate < 1f) {
+                        Engine.TimeRate = Calc.Approach(Engine.TimeRate, 1f, Engine.RawDeltaTime * 2f);
+                        yield return null;
+                    }
+                } else {
+                    for (float t = 0f; t < 1f; t += Engine.RawDeltaTime * 2f) {
+                        poem.Alpha = Ease.CubeIn(1f - t);
+                        yield return null;
+                    }
+                    player.Depth = 0;
+                }
+                EndCutscene();
+                PostCollect();
+            } else {
+                yield return new FadeWipe(level, wipeIn: false) {
+                    Duration = 3.25f
+                }.Duration;
+                level.CompleteArea(spotlightWipe: false, skipScreenWipe: true, skipCompleteScreen: false);
+            }
+        }
 
 		private void EndCutscene()
 		{

@@ -117,6 +117,7 @@ placements.entities.vitellary/customheart.tooltips.bully=Whether the heart is a 
 placements.entities.vitellary/customheart.tooltips.switchCoreMode=Switches core mode when collected. Red = hot, Blue = cold, other types = toggle
 placements.entities.vitellary/customheart.tooltips.colorGrade=Whether switching core mode also switches color grade between hot and cold.
 placements.entities.vitellary/customheart.tooltips.static=Disables the heart floaty effect.
+placements.entities.vitellary/customheart.tooltips.poemCutscene=Whether the heart should show the poem cutscene upon collection.\nDoes not do anything if "Slowdown" is false.
 
 # Custom Moving Touch Switch
 placements.entities.vitellary/customtouchswitch.tooltips.flag=The session flag this touch switch sets. Give the same to multiple touch switches and switch gates to group them.
