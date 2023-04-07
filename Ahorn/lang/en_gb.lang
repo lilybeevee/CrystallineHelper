@@ -160,6 +160,11 @@ placements.entities.vitellary/flagkevin.tooltips.inverted=If true, the kevin is 
 placements.entities.vitellary/flagkevin.tooltips.lavaSpeed=Percentage of normal speed to use when the kevin is in lava.
 placements.entities.vitellary/flagkevin.tooltips.chillout=Whether the Kevin should have a large face and get tired after being hit.
 placements.entities.vitellary/flagkevin.tooltips.axes=Determines which sides of the Kevin are hittable.
+placements.entities.vitellary/flagkevin.tooltips.playerCanHit=Whether the player can hit the Kevin's sides.
+placements.entities.vitellary/flagkevin.tooltips.repeatWhileFlag=If true, the kevin will repeatedly move in the flag direction every time it returns to its initial spot while the flag is true.
+placements.entities.vitellary/flagkevin.tooltips.setFlagOnHit=If true, the flag will be set to true when the player hits the Kevin.
+placements.entities.vitellary/flagkevin.tooltips.crushSpeed=The speed at which the Kevin will move when attacking.
+placements.entities.vitellary/flagkevin.tooltips.returnSpeed=The speed at which the Kevin will move when returning.
 
 # Bumper Block
 placements.entities.vitellary/bumperblock.tooltips.axes=Directions you can dash into to hit the block.

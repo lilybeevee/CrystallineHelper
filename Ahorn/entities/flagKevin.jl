@@ -2,7 +2,7 @@ module FlushelineFlagKevin
 
 using ..Ahorn, Maple
 
-@mapdef Entity "vitellary/flagkevin" FlagKevin(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, axes::String="horizontal", flagDirection::String="Right", flag::String="", customPath::String="crushblock", inverted::Bool = false, chillout::Bool = false, lavaSpeed::Number=1.0)
+@mapdef Entity "vitellary/flagkevin" FlagKevin(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, axes::String="horizontal", flagDirection::String="Right", flag::String="", customPath::String="crushblock", inverted::Bool = false, chillout::Bool = false, lavaSpeed::Number=1.0, playerCanHit::Bool = true, repeatWhileFlag::Bool = false, setFlagOnHit::Bool=false, crushSpeed::Number=240.0, returnSpeed::Number=60.0)
 
 const placements = Ahorn.PlacementDict(
     "Flag-Activated Kevin (Reskinnable) (Crystalline)" => Ahorn.EntityPlacement(
@@ -23,7 +23,7 @@ Ahorn.editingOptions(entity::FlagKevin) = Dict{String, Any}(
     "flagDirection" => Maple.move_block_directions
 )
 
-Ahorn.editingOrder(entity::FlagKevin) = String["x", "y", "width", "height", "axes", "chillout", "flag", "inverted", "flagDirection", "lavaSpeed", "customPath"]
+Ahorn.editingOrder(entity::FlagKevin) = String["x", "y", "width", "height", "axes", "customPath", "flag", "flagDirection", "crushSpeed", "returnSpeed", "lavaSpeed", "chillout", "inverted", "playerCanHit", "repeatWhileFlag", "setFlagOnHit"]
 Ahorn.minimumSize(entity::FlagKevin) = 24, 24
 Ahorn.resizable(entity::FlagKevin) = true, true
 Ahorn.selection(entity::FlagKevin) = Ahorn.getEntityRectangle(entity)

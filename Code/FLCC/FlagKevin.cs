@@ -66,6 +66,9 @@ namespace vitmod
         private readonly bool inverted;
         private bool? flagLastFrame;
         private readonly float lavaSpeed;
+        private readonly bool playerHit;
+        private readonly bool repeat;
+        private readonly bool setFlagOnHit;
         private float CrushSpeed = _CrushSpeed;
         private float CrushAccel = _CrushAccel;
         private float ReturnSpeed = _ReturnSpeed;
@@ -74,13 +77,19 @@ namespace vitmod
         private FlagKevinHelper helper;
 
 
-        public FlagKevin(Vector2 position, float width, float height, Axes axes, MoveBlock.Directions _flagDirection, string _flag, bool _inverted = false, bool chillOut = false, float _lavaSpeed = 1, string customPath = null)
+        public FlagKevin(Vector2 position, float width, float height, Axes axes, MoveBlock.Directions _flagDirection, string _flag, bool _inverted = false, bool chillOut = false, float _lavaSpeed = 1, string customPath = null, bool _playerHit = true, bool _repeat = false, bool _setFlagOnHit = false, float _crushSpeed = _CrushSpeed, float _returnSpeed = _ReturnSpeed)
             : base(position, width, height, safe: false)
         {
             flag = _flag;
             flagDirection = _flagDirection;
             inverted = _inverted;
             lavaSpeed = _lavaSpeed;
+            playerHit = _playerHit;
+            repeat = _repeat;
+            setFlagOnHit = _setFlagOnHit;
+
+            CrushSpeed = _crushSpeed;
+            ReturnSpeed = _returnSpeed;
 
             #region Vanilla
             OnDashCollide = OnDashed;
@@ -180,7 +189,9 @@ namespace vitmod
             data.Position + offset, data.Width, data.Height, data.Enum("axes", Axes.Both),
             data.Enum("flagDirection", MoveBlock.Directions.Right), data.Attr("flag"),
             data.Bool("inverted"), data.Bool("chillout"), data.Float("lavaSpeed", 1f),
-            data.Attr("customPath", "crushblock"))
+            data.Attr("customPath", "crushblock"), data.Bool("playerCanHit", true),
+            data.Bool("repeatWhileFlag"), data.Bool("setFlagOnHit", false),
+            data.Float("crushSpeed", _CrushSpeed), data.Float("returnSpeed", _ReturnSpeed))
         { }
 
         public override void Added(Scene scene)
@@ -242,7 +253,9 @@ namespace vitmod
                 returnLoopSfx.Param("submerged", Submerged ? 1 : 0);
             }
 
-            if (flagLastFrame.HasValue && SceneAs<Level>().Session.GetFlag(flag) != flagLastFrame.Value && SceneAs<Level>().Session.GetFlag(flag) != inverted)
+            bool isflag = SceneAs<Level>().Session.GetFlag(flag);
+            if ((!repeat && flagLastFrame.HasValue && isflag != flagLastFrame.Value && isflag != inverted)
+                || (repeat && isflag != inverted && (attackCoroutine == null || !attackCoroutine.Active)))
             {
                 Vector2 direction;
                 direction = flagDirection == MoveBlock.Directions.Right ? Vector2.UnitX : -Vector2.UnitX;
@@ -250,7 +263,7 @@ namespace vitmod
                 direction = flagDirection == MoveBlock.Directions.Down ? Vector2.UnitY : direction;
                 if (CanActivate(direction, true)) { Attack(direction); }
             }
-            flagLastFrame = SceneAs<Level>().Session.GetFlag(flag);
+            flagLastFrame = isflag;
         }
 
         public override void Render()
@@ -343,8 +356,11 @@ namespace vitmod
 
         private DashCollisionResults OnDashed(Player player, Vector2 direction)
         {
-            if (CanActivate(-direction))
+            if (playerHit && CanActivate(-direction))
             {
+                if (setFlagOnHit) {
+                    SceneAs<Level>().Session.SetFlag(flag, true);
+                }
                 Attack(-direction);
                 return DashCollisionResults.Rebound;
             }
