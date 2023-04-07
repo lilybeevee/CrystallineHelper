@@ -2,7 +2,7 @@ module FlushelineFlagKevin
 
 using ..Ahorn, Maple
 
-@mapdef Entity "vitellary/flagkevin" FlagKevin(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, axes::String="horizontal", flag_direction::String="Right", flag::String="", custom_path::String="crushblock", inverted::Bool = false, chillout::Bool = false, lava_speed::Int=100)
+@mapdef Entity "vitellary/flagkevin" FlagKevin(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, axes::String="horizontal", flagDirection::String="Right", flag::String="", customPath::String="crushblock", inverted::Bool = false, chillout::Bool = false, lavaSpeed::Int=100)
 
 const placements = Ahorn.PlacementDict(
     "Flag-Activated Kevin (Reskinnable) (Crystalline)" => Ahorn.EntityPlacement(
@@ -13,17 +13,17 @@ const placements = Ahorn.PlacementDict(
         FlagKevin,
         "rectangle",
         Dict{String, Any}(
-            "lava_speed" => 50
+            "lavaSpeed" => 50
         )
     )
 )
 
 Ahorn.editingOptions(entity::FlagKevin) = Dict{String, Any}(
     "axes" => Maple.kevin_axes,
-    "flag_direction" => Maple.move_block_directions
+    "flagDirection" => Maple.move_block_directions
 )
 
-Ahorn.editingOrder(entity::FlagKevin) = String["x", "y", "width", "height", "axes", "chillout", "flag", "inverted", "flag_direction", "lava_speed", "custom_path"]
+Ahorn.editingOrder(entity::FlagKevin) = String["x", "y", "width", "height", "axes", "chillout", "flag", "inverted", "flagDirection", "lavaSpeed", "customPath"]
 Ahorn.minimumSize(entity::FlagKevin) = 24, 24
 Ahorn.resizable(entity::FlagKevin) = true, true
 Ahorn.selection(entity::FlagKevin) = Ahorn.getEntityRectangle(entity)
@@ -36,7 +36,7 @@ const rotations = Dict{String, Number}(
 )
 
 function Ahorn.renderSelectedAbs(ctx::Ahorn.Cairo.CairoContext, entity::FlagKevin)
-    theta = rotations[entity.flag_direction] - pi / 2
+    theta = rotations[entity.flagDirection] - pi / 2
 
     width = Int(get(entity.data, "width", 0))
     height = Int(get(entity.data, "height", 0))
@@ -95,26 +95,26 @@ end
 
 function Ahorn.rotated(entity::FlagKevin, steps::Int)
     while steps > 0
-        if entity.flag_direction == "Left"
-            entity.flag_direction = "Up"
-        elseif entity.flag_direction == "Up"
-            entity.flag_direction = "Right"
-        elseif entity.flag_direction == "Right"
-            entity.flag_direction = "Down"
-        elseif entity.flag_direction == "Down"
-            entity.flag_direction = "Left"
+        if entity.flagDirection == "Left"
+            entity.flagDirection = "Up"
+        elseif entity.flagDirection == "Up"
+            entity.flagDirection = "Right"
+        elseif entity.flagDirection == "Right"
+            entity.flagDirection = "Down"
+        elseif entity.flagDirection == "Down"
+            entity.flagDirection = "Left"
         end
         steps -= 1
     end
     while steps < 0
-        if entity.flag_direction == "Left"
-            entity.flag_direction = "Down"
-        elseif entity.flag_direction == "Down"
-            entity.flag_direction = "Right"
-        elseif entity.flag_direction == "Right"
-            entity.flag_direction = "Up"
-        elseif entity.flag_direction == "Up"
-            entity.flag_direction = "Left"
+        if entity.flagDirection == "Left"
+            entity.flagDirection = "Down"
+        elseif entity.flagDirection == "Down"
+            entity.flagDirection = "Right"
+        elseif entity.flagDirection == "Right"
+            entity.flagDirection = "Up"
+        elseif entity.flagDirection == "Up"
+            entity.flagDirection = "Left"
         end
         steps += 1
     end
