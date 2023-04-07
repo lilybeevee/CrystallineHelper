@@ -261,11 +261,18 @@ entities.vitellary/interactivechaser.attributes.description.harmful=Whether bade
 entities.vitellary/interactivechaser.attributes.description.canChangeMusic=Whether the music gets set to the badeline chase music.
 
 # Flag Kevin
-entities.vitellary/flagkevin.attributes.description.custom_path=Path to the kevin sprite to use. Relative to Atlases/Gameplay/objects.
-entities.vitellary/flagkevin.attributes.description.flag_direction=Direction to move when the flag is triggered.
+entities.vitellary/flagkevin.attributes.description.customPath=Path to the kevin sprite to use. Relative to Atlases/Gameplay/objects.
+entities.vitellary/flagkevin.attributes.description.flagDirection=Direction to move when the flag is triggered.
 entities.vitellary/flagkevin.attributes.description.flag=Flag that should trigger the kevin.
 entities.vitellary/flagkevin.attributes.description.inverted=If true, the kevin is triggered when the flag becomes false rather than true.
-entities.vitellary/flagkevin.attributes.description.lava_speed=Percentage of normal speed to use when the kevin is in lava.
+entities.vitellary/flagkevin.attributes.description.lavaSpeed=Percentage of normal speed to use when the kevin is in lava.
+entities.vitellary/flagkevin.attributes.description.chillout=Whether the Kevin should have a large face and get tired after being hit.
+entities.vitellary/flagkevin.attributes.description.axes=Determines which sides of the Kevin are hittable.
+entities.vitellary/flagkevin.attributes.description.playerCanHit=Whether the player can hit the Kevin's sides.
+entities.vitellary/flagkevin.attributes.description.repeatWhileFlag=If true, the kevin will repeatedly move in the flag direction every time it returns to its initial spot while the flag is true.
+entities.vitellary/flagkevin.attributes.description.setFlagOnHit=If true, the flag will be set to true when the player hits the Kevin.
+entities.vitellary/flagkevin.attributes.description.crushSpeed=The speed at which the Kevin will move when attacking.
+entities.vitellary/flagkevin.attributes.description.returnSpeed=The speed at which the Kevin will move when returning.
 
 # Bumper Block
 entities.vitellary/bumperblock.attributes.description.axes=Directions you can dash into to hit the block.
