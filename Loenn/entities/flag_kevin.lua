@@ -21,6 +21,11 @@ kevin.placements = {
             inverted = false,
             chillout = false,
             lavaSpeed = 1,
+            crushSpeed = 240,
+            returnSpeed = 60,
+            playerCanHit = true,
+            repeatWhileFlag = false,
+            setFlagOnHit = false,
         }
     },
     {
@@ -35,6 +40,11 @@ kevin.placements = {
             inverted = false,
             chillout = false,
             lavaSpeed = 0.5,
+            crushSpeed = 240,
+            returnSpeed = 60,
+            playerCanHit = true,
+            repeatWhileFlag = false,
+            setFlagOnHit = false,
         }
     },
 }
