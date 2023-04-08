@@ -23,6 +23,7 @@ customHeart.placements = {
             colorGrade = false,
             static = false,
             dashCount = 1,
+            poemCutscene = true,
         }
     }
 }

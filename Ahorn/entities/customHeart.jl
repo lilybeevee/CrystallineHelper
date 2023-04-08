@@ -2,7 +2,7 @@ module FlushelineCustomHeart
 
 using ..Ahorn, Maple
 
-@mapdef Entity "vitellary/customheart" CustomHeart(x::Integer, y::Integer, slowdown::Bool=false, endLevel::Bool=false, oneUse::Bool=false, respawnTime::Number=3.0, poemId::String="", type::String="Blue", path::String="heartGemColorable", color::String="ff4fed", bloom::Number=0.75, light::Bool=true, bully::Bool=false, additionalEffects::Bool=true, switchCoreMode::Bool=false, colorGrade::Bool=false, static::Bool=false, dashCount::Integer=1)
+@mapdef Entity "vitellary/customheart" CustomHeart(x::Integer, y::Integer, slowdown::Bool=false, endLevel::Bool=false, oneUse::Bool=false, respawnTime::Number=3.0, poemId::String="", type::String="Blue", path::String="heartGemColorable", color::String="ff4fed", bloom::Number=0.75, light::Bool=true, bully::Bool=false, additionalEffects::Bool=true, switchCoreMode::Bool=false, colorGrade::Bool=false, static::Bool=false, dashCount::Integer=1, poemCutscene::Bool=true)
 
 const placements = Ahorn.PlacementDict(
     "Custom Fake Heart (Crystalline)" => Ahorn.EntityPlacement(
@@ -15,7 +15,7 @@ spriteTypes = String["Blue", "Red", "Gold", "Custom", "Core", "CoreInverted", "R
 Ahorn.editingOptions(entity::CustomHeart) = Dict{String, Any}(
     "type" => spriteTypes
 )
-Ahorn.editingOrder(entity::CustomHeart) = String["x", "y", "respawnTime", "dashCount", "poemId", "color", "path", "type", "bloom", "endLevel", "slowdown", "light", "additionalEffects", "oneUse", "bully", "switchCoreMode", "colorGrade"]
+Ahorn.editingOrder(entity::CustomHeart) = String["x", "y", "respawnTime", "dashCount", "poemId", "color", "path", "type", "bloom", "endLevel", "slowdown", "poemCutscene", "light", "additionalEffects", "oneUse", "bully", "switchCoreMode", "colorGrade"]
 
 function getSprites(entity::CustomHeart)
     type = get(entity.data, "type", "Blue")

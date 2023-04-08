@@ -225,6 +225,7 @@ entities.vitellary/customheart.attributes.description.bully=Whether the heart is
 entities.vitellary/customheart.attributes.description.switchCoreMode=Switches core mode when collected. Red = hot, Blue = cold, other types = toggle
 entities.vitellary/customheart.attributes.description.colorGrade=Whether switching core mode also switches color grade between hot and cold.
 entities.vitellary/customheart.attributes.description.static=Disables the heart floaty effect.
+entities.vitellary/customheart.attributes.description.poemCutscene=Whether the heart should show the poem cutscene upon collection.\nDoes not do anything if "Slowdown" is false.
 
 # Custom Moving Touch Switch
 entities.vitellary/customtouchswitch.attributes.description.flag=The session flag this touch switch sets. Give the same to multiple touch switches and switch gates to group them.
