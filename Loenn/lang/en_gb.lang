@@ -63,6 +63,7 @@ entities.vitellary/triggerbeam.placements.name.beam_right=Trigger Beam (Right)
 entities.vitellary/triggerbeam.placements.name.beam_down=Trigger Beam (Down)
 entities.vitellary/triggerbeam.placements.name.beam_left=Trigger Beam (Left)
 entities.vitellary/triggerbeam.placements.name.beam_up=Trigger Beam (Up)
+entities.vitellary/dashcodecontroller.placements.name.dash_code_controller=Dash Code Controller
 
 # Triggers
 
@@ -303,6 +304,12 @@ entities.vitellary/customprologuebridge.attributes.description.delay=How long to
 entities.vitellary/customprologuebridge.attributes.description.speed=How fast the bridge should crumble. 0.8 is just slow enough that the player can keep up without dashing.
 entities.vitellary/customprologuebridge.attributes.description.flag=If the flag is true, the bridge won't appear.
 triggers.vitellary/custombridgeactivator.attributes.description.activationID=The ID for the group of bridges the trigger should activate.
+
+# Dash Code Controller
+entities.vitellary/dashcodecontroller.attributes.description.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
+entities.vitellary/dashcodecontroller.attributes.description.flagLabel=The starting label of the flags that will get activated.\nEvery time a dash is successfully inputted, a flag with this label + "_##" will be set to true.\nFor example, flag label "test" followed by a successful dash will set "test_01" to true.
+entities.vitellary/dashcodecontroller.attributes.description.flagOnFailure=Flag that will get set to true if the sequence has started, but fails partway through.
+entities.vitellary/dashcodecontroller.attributes.description.index=This sequence's index, used by the UI entity to correctly display dash sequences in order.
 
 # Custom Wind Trigger
 triggers.vitellary/customwindtrigger.attributes.description.speedX=The horizontal speed of the wind. Can be a list of speeds, separated by commas. For reference, normal wind speed is 4, and strong is 8.

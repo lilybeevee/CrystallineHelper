@@ -60,6 +60,11 @@ namespace vitmod
                 get;
                 set;
             } = TriggerTrigger.RandomizationTypes.FileTimer;
+
+            public bool DisplayDashSequence {
+                get;
+                set;
+            } = false;
         }
 
         public override Type SessionType => typeof(VitModuleSession);
@@ -282,6 +287,7 @@ namespace vitmod
             TimeFadeTrigger.Load();
             KaizoBlock.Load();
             FlagSequenceController.Load();
+            DashCodeDisplay.Load();
 
             BombTimerTrigger.Load();
             CustomPuffer.Load();
@@ -786,7 +792,8 @@ namespace vitmod
             TimeFadeTrigger.Unload();
             KaizoBlock.Unload();
             FlagSequenceController.Unload();
-            
+            DashCodeDisplay.Unload();
+
             BombTimerTrigger.Unload();
             CustomPuffer.Unload();
             DeadlyDashSwitch.Unload();
