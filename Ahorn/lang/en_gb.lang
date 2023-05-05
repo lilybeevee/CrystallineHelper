@@ -117,6 +117,7 @@ placements.entities.vitellary/customheart.tooltips.bully=Whether the heart is a 
 placements.entities.vitellary/customheart.tooltips.switchCoreMode=Switches core mode when collected. Red = hot, Blue = cold, other types = toggle
 placements.entities.vitellary/customheart.tooltips.colorGrade=Whether switching core mode also switches color grade between hot and cold.
 placements.entities.vitellary/customheart.tooltips.static=Disables the heart floaty effect.
+placements.entities.vitellary/customheart.tooltips.poemCutscene=Whether the heart should show the poem cutscene upon collection.\nDoes not do anything if "Slowdown" is false.
 
 # Custom Moving Touch Switch
 placements.entities.vitellary/customtouchswitch.tooltips.flag=The session flag this touch switch sets. Give the same to multiple touch switches and switch gates to group them.
@@ -193,6 +194,12 @@ placements.entities.vitellary/customprologuebridge.tooltips.delay=How long to wa
 placements.entities.vitellary/customprologuebridge.tooltips.speed=How fast the bridge should crumble. 0.8 is just slow enough that the player can keep up without dashing.
 placements.entities.vitellary/customprologuebridge.tooltips.flag=If the flag is true, the bridge won't appear.
 placements.triggers.vitellary/custombridgeactivator.tooltips.activationID=The ID for the group of bridges the trigger should activate.
+
+# Dash Code Controller
+placements.entities.vitellary/dashcodecontroller.tooltips.dashCode=The code the player needs to input. Should be in the form of "U,DR,L", with commas separating each direction. When writing diagonals, write them with vertical first, then horizontal, with no space. * is also a valid input, meaning you can dash any direction for it to work.
+placements.entities.vitellary/dashcodecontroller.tooltips.flagLabel=The starting label of the flags that will get activated.\nEvery time a dash is successfully inputted, a flag with this label + "_##" will be set to true.\nFor example, flag label "test" followed by a successful dash will set "test_01" to true.
+placements.entities.vitellary/dashcodecontroller.tooltips.flagOnFailure=Flag that will get set to true if the sequence has started, but fails partway through.
+placements.entities.vitellary/dashcodecontroller.tooltips.index=This sequence's index, used by the UI entity to correctly display dash sequences in order.
 
 # Remote Trigger
 placements.entities.vitellary/remotetrigger.tooltips.value=The Linked Move Block group the trigger activates.
