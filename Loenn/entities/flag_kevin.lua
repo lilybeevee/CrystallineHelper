@@ -23,6 +23,8 @@ kevin.placements = {
             lavaSpeed = 1,
             crushSpeed = 240,
             returnSpeed = 60,
+            crushAccel = 500,
+            returnAccel = 160,
             playerCanHit = true,
             repeatWhileFlag = false,
             setFlagOnHit = false,
@@ -42,6 +44,8 @@ kevin.placements = {
             lavaSpeed = 0.5,
             crushSpeed = 240,
             returnSpeed = 60,
+            crushAccel = 500,
+            returnAccel = 160,
             playerCanHit = true,
             repeatWhileFlag = false,
             setFlagOnHit = false,
@@ -54,11 +58,18 @@ local axesOptions = {
     Vertical = "vertical",
     Horizontal = "horizontal"
 }
+local moveDirections = {
+    "Up", "Down", "Left", "Right"
+}
 kevin.fieldInformation = {
     axes = {
         options = axesOptions,
-        editable = false
-    }
+        editable = false,
+    },
+    flagDirection = {
+        options = moveDirections,
+        editable = false,
+    },
 }
 
 local frameTextures = {

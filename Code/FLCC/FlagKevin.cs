@@ -78,7 +78,10 @@ namespace vitmod
         private FlagKevinHelper helper;
 
 
-        public FlagKevin(Vector2 position, float width, float height, Axes axes, MoveBlock.Directions _flagDirection, string _flag, bool _inverted = false, bool chillOut = false, float _lavaSpeed = 1, string customPath = null, bool _playerHit = true, bool _repeat = false, bool _setFlagOnHit = false, float _crushSpeed = 240f, float _returnSpeed = 60f)
+        public FlagKevin(Vector2 position, float width, float height, Axes axes, MoveBlock.Directions _flagDirection,
+            string _flag, bool _inverted = false, bool chillOut = false, float _lavaSpeed = 1, string customPath = null,
+            bool _playerHit = true, bool _repeat = false, bool _setFlagOnHit = false,
+            float _crushSpeed = 240f, float _returnSpeed = 60f, float _crushAccel = 500f, float _returnAccel = 160f)
             : base(position, width, height, safe: false)
         {
             flag = _flag;
@@ -90,11 +93,11 @@ namespace vitmod
             setFlagOnHit = _setFlagOnHit;
 
             _CrushSpeed = _crushSpeed;
-            CrushSpeed = _crushSpeed;
             _ReturnSpeed = _returnSpeed;
-            ReturnSpeed = _returnSpeed;
-            _CrushAccel = _CrushSpeed*(25f/12f);
-            _ReturnAccel = _ReturnSpeed*(8f/3f);
+            _CrushAccel = _crushAccel;
+            _ReturnAccel = _returnAccel;
+            ReturnSpeed = _ReturnSpeed;
+            CrushSpeed = _CrushSpeed;
             CrushAccel = _CrushAccel;
             ReturnAccel = _ReturnAccel;
 
@@ -198,7 +201,8 @@ namespace vitmod
             data.Bool("inverted"), data.Bool("chillout"), data.Float("lavaSpeed", 1f),
             data.Attr("customPath", "crushblock"), data.Bool("playerCanHit", true),
             data.Bool("repeatWhileFlag"), data.Bool("setFlagOnHit", false),
-            data.Float("crushSpeed", 240f), data.Float("returnSpeed", 60f))
+            data.Float("crushSpeed", 240f), data.Float("returnSpeed", 60f),
+            data.Float("crushAccel", 500f), data.Float("returnAccel", 160f))
         { }
 
         public override void Added(Scene scene)

@@ -2,7 +2,7 @@ module FlushelineFlagKevin
 
 using ..Ahorn, Maple
 
-@mapdef Entity "vitellary/flagkevin" FlagKevin(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, axes::String="horizontal", flagDirection::String="Right", flag::String="", customPath::String="crushblock", inverted::Bool = false, chillout::Bool = false, lavaSpeed::Number=1.0, playerCanHit::Bool = true, repeatWhileFlag::Bool = false, setFlagOnHit::Bool=false, crushSpeed::Number=240.0, returnSpeed::Number=60.0)
+@mapdef Entity "vitellary/flagkevin" FlagKevin(x::Integer, y::Integer, width::Integer=Maple.defaultBlockWidth, height::Integer=Maple.defaultBlockHeight, axes::String="horizontal", flagDirection::String="Right", flag::String="", customPath::String="crushblock", inverted::Bool = false, chillout::Bool = false, lavaSpeed::Number=1.0, playerCanHit::Bool = true, repeatWhileFlag::Bool = false, setFlagOnHit::Bool=false, crushSpeed::Number=240.0, returnSpeed::Number=60.0, crushAccel::Number=500.0, returnAccel::Number=160.0)
 
 const placements = Ahorn.PlacementDict(
     "Flag-Activated Kevin (Reskinnable) (Crystalline)" => Ahorn.EntityPlacement(
