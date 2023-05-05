@@ -152,8 +152,7 @@ namespace vitmod
 
         private IEnumerator DoorAnimation(LockBlock door)
         {
-            DynData<LockBlock> doorData = new DynData<LockBlock>(door);
-            Sprite sprite = doorData.Get<Sprite>("sprite");
+            Sprite sprite = door.sprite;
             //reverse is broken, so we have to do it manually
             sprite.Play("burst", true);
             for (int i = sprite.CurrentAnimationTotalFrames-1; i >= 0; i--)
@@ -209,11 +208,10 @@ namespace vitmod
         public static IEnumerator LockBlock_UnlockRoutine(On.Celeste.LockBlock.orig_UnlockRoutine orig, LockBlock self, Follower fol)
         {
             IEnumerator orig_enum = orig(self, fol);
-            DynData<LockBlock> doorData = new DynData<LockBlock>(self);
             CustomWindController wind = self.Scene.Tracker.GetEntity<CustomWindController>();
             while (orig_enum.MoveNext())
             {
-                if (wind != null && wind.activateType == "Locked Door" && doorData.Get<Sprite>("sprite").CurrentAnimationID == "burst")
+                if (wind != null && wind.activateType == "Locked Door" && self.sprite.CurrentAnimationID == "burst")
                 {
                     wind.ActivateWind();
                 }

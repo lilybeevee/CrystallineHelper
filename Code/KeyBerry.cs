@@ -356,13 +356,12 @@ namespace vitmod
 
         private static IEnumerator KeyBerryOpenDoor(LockBlock door)
         {
-            DynData<LockBlock> doorData = new DynData<LockBlock>(door);
-            SoundEmitter emitter = SoundEmitter.Play(doorData.Get<string>("unlockSfxName"), door);
+            SoundEmitter emitter = SoundEmitter.Play(door.unlockSfxName, door);
             emitter.Source.DisposeOnTransition = true;
             Level level = door.SceneAs<Level>();
             yield return 0.15f;
             door.UnlockingRegistered = true;
-            if (doorData.Get<bool>("stepMusicProgress"))
+            if (door.stepMusicProgress)
             {
                 AudioTrackState music = level.Session.Audio.Music;
                 int progress = music.Progress;
@@ -374,10 +373,10 @@ namespace vitmod
             door.Tag |= Tags.TransitionUpdate;
             door.Collidable = false;
             emitter.Source.DisposeOnTransition = false;
-            yield return doorData.Get<Sprite>("sprite").PlayRoutine("open", false);
+            yield return door.sprite.PlayRoutine("open", false);
             level.Shake(0.3f);
             Input.Rumble(RumbleStrength.Medium, RumbleLength.Medium);
-            yield return doorData.Get<Sprite>("sprite").PlayRoutine("burst", false);
+            yield return door.sprite.PlayRoutine("burst", false);
             door.RemoveSelf();
             yield break;
         }

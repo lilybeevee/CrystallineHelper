@@ -251,7 +251,7 @@ namespace vitmod
 			holder = null;
 		}
 
-		protected override void OnSquish(CollisionData data)
+		public override void OnSquish(CollisionData data)
 		{
 			Explode();
 			GotoGone();
@@ -726,7 +726,7 @@ namespace vitmod
 			{
 				return;
 			}
-			if (Hold != null && Input.Grab.Check && !player.Ducking && !new DynData<Player>(player).Get<bool>("IsTired"))
+			if (Hold != null && Input.Grab.Check && !player.Ducking && !player.IsTired)
 				return;
 			if (cannotHitTimer <= 0f)
 			{

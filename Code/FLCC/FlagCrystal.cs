@@ -350,7 +350,7 @@ namespace vitmod
             return Speed.Y == 0f && base.IsRiding(solid);
         }
 
-        protected override void OnSquish(CollisionData data)
+        public override void OnSquish(CollisionData data)
         {
             if (!TrySquishWiggle(data))
             {
@@ -396,7 +396,7 @@ namespace vitmod
                 if (Hold.Holder != null)
                     Hold.Holder.Holding = null;
                 Hold.RemoveSelf();
-                new DynData<Holdable>(Hold).Set<Player>("Holder", null);
+                Hold.Holder = null;
                 backSprite.Visible = false;
                 theoSprite.Visible = false;
                 frontSprite.Visible = false;
@@ -412,13 +412,12 @@ namespace vitmod
                 return orig(self);
             }
             bool hasTheo = false;
-            DynData<TempleGate> gateData = new DynData<TempleGate>(self);
             foreach (FlagCrystal crystal in self.SceneAs<Level>().Tracker.GetEntities<FlagCrystal>())
             {
                 if (crystal.isTheo)
                 {
                     hasTheo = true;
-                    if (crystal.X > self.X + 10f || Vector2.DistanceSquared(gateData.Get<Vector2>("holdingCheckFrom"), crystal.Center) < (gateData.Get<bool>("open") ? 6400f : 4096f))
+                    if (crystal.X > self.X + 10f || Vector2.DistanceSquared(self.holdingCheckFrom, crystal.Center) < (self.open ? 6400f : 4096f))
                     {
                         return true;
                     }

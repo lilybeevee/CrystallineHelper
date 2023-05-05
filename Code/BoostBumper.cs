@@ -122,8 +122,7 @@ namespace vitmod
                 cannotUseTimer = 0.45f;
                 player.StateMachine.State = 4;
                 player.Speed = Vector2.Zero;
-                DynData<Player> playerData = new DynData<Player>(player);
-                playerData.Set("boostTarget", Center);
+                player.boostTarget = Center;
                 startedBoosting = true;
                 Audio.Play("event:/game/04_cliffside/greenbooster_enter", Position);
                 wiggler.Start();
