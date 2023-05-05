@@ -31,10 +31,7 @@ namespace vitmod
         public static ParticleType P_Impact => CrushBlock.P_Impact;
         public static ParticleType P_Crushing => CrushBlock.P_Impact;
         public static ParticleType P_Activate => CrushBlock.P_Impact;
-        private const float _CrushSpeed = 240f;
-        private const float _CrushAccel = 500f;
-        private const float _ReturnSpeed = 60f;
-        private const float _ReturnAccel = 160f;
+
         private Color fill = Calc.HexToColor("62222b");
         private Level level;
         private bool canActivate;
@@ -69,15 +66,19 @@ namespace vitmod
         private readonly bool playerHit;
         private readonly bool repeat;
         private readonly bool setFlagOnHit;
-        private float CrushSpeed = _CrushSpeed;
-        private float CrushAccel = _CrushAccel;
-        private float ReturnSpeed = _ReturnSpeed;
-        private float ReturnAccel = _ReturnAccel;
+        private float _CrushSpeed;
+        private float _CrushAccel;
+        private float _ReturnSpeed;
+        private float _ReturnAccel;
+        private float CrushSpeed;
+        private float CrushAccel;
+        private float ReturnSpeed;
+        private float ReturnAccel;
 
         private FlagKevinHelper helper;
 
 
-        public FlagKevin(Vector2 position, float width, float height, Axes axes, MoveBlock.Directions _flagDirection, string _flag, bool _inverted = false, bool chillOut = false, float _lavaSpeed = 1, string customPath = null, bool _playerHit = true, bool _repeat = false, bool _setFlagOnHit = false, float _crushSpeed = _CrushSpeed, float _returnSpeed = _ReturnSpeed)
+        public FlagKevin(Vector2 position, float width, float height, Axes axes, MoveBlock.Directions _flagDirection, string _flag, bool _inverted = false, bool chillOut = false, float _lavaSpeed = 1, string customPath = null, bool _playerHit = true, bool _repeat = false, bool _setFlagOnHit = false, float _crushSpeed = 240f, float _returnSpeed = 60f)
             : base(position, width, height, safe: false)
         {
             flag = _flag;
@@ -88,8 +89,14 @@ namespace vitmod
             repeat = _repeat;
             setFlagOnHit = _setFlagOnHit;
 
+            _CrushSpeed = _crushSpeed;
             CrushSpeed = _crushSpeed;
+            _ReturnSpeed = _returnSpeed;
             ReturnSpeed = _returnSpeed;
+            _CrushAccel = _CrushSpeed*(25f/12f);
+            _ReturnAccel = _ReturnSpeed*(8f/3f);
+            CrushAccel = _CrushAccel;
+            ReturnAccel = _ReturnAccel;
 
             #region Vanilla
             OnDashCollide = OnDashed;
@@ -191,7 +198,7 @@ namespace vitmod
             data.Bool("inverted"), data.Bool("chillout"), data.Float("lavaSpeed", 1f),
             data.Attr("customPath", "crushblock"), data.Bool("playerCanHit", true),
             data.Bool("repeatWhileFlag"), data.Bool("setFlagOnHit", false),
-            data.Float("crushSpeed", _CrushSpeed), data.Float("returnSpeed", _ReturnSpeed))
+            data.Float("crushSpeed", 240f), data.Float("returnSpeed", 60f))
         { }
 
         public override void Added(Scene scene)
