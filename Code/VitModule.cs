@@ -56,7 +56,7 @@ namespace vitmod
         public class VitModuleSettings : EverestModuleSettings
         {
             public TriggerTrigger.RandomizationTypes TriggerTriggerRandomizationType
-            { 
+            {
                 get;
                 set;
             } = TriggerTrigger.RandomizationTypes.FileTimer;
@@ -670,14 +670,18 @@ namespace vitmod
 
         private void Player_CallDashEvents(On.Celeste.Player.orig_CallDashEvents orig, Player self)
         {
-            foreach (BoostBumper booster in self.Scene.Tracker.GetEntities<BoostBumper>())
+            if (self.Scene != null)
             {
-                if (booster.startedBoosting)
+                foreach (BoostBumper booster in self.Scene.Tracker.GetEntities<BoostBumper>())
                 {
-                    booster.PlayerBoosted(self, self.DashDir);
-                    return;
+                    if (booster.startedBoosting)
+                    {
+                        booster.PlayerBoosted(self, self.DashDir);
+                        return;
+                    }
                 }
             }
+
             orig(self);
         }
 
@@ -804,7 +808,7 @@ namespace vitmod
             PairedDashSwitch.Unload();
             TempleGateAllSwitches.Unload();
             TriggerBeam.Unload();
-            
+
             On.Celeste.Level.Update -= Level_Update;
             IL.Monocle.EntityList.Update -= EntityList_Update;
             IL.Monocle.RendererList.Update -= RendererList_Update;
