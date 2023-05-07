@@ -390,24 +390,23 @@ namespace vitmod
 		private static void Player_orig_Update(ILContext il) {
 			ILCursor cursor = new ILCursor(il);
 
-			if (!cursor.TryGotoNext(MoveType.After,
-				instr => instr.MatchLdfld<Player>("onCollideH"),
-				instr => instr.MatchLdnull(),
-				instr => instr.MatchCall<Actor>("MoveH"))) {
+            if (!cursor.TryGotoNext(MoveType.After,
+                instr => instr.MatchCallvirt<Player>("set_Ducking"))) {
 
-				return;
-			}
+                return;
+            }
 
-			if (!cursor.TryGotoPrev(MoveType.AfterLabel,
-				instr => instr.MatchLdarg(0),
-				instr => instr.MatchLdfld<Player>("StateMachine"),
-				instr => instr.MatchCallvirt<StateMachine>("get_State"),
-				instr => instr.MatchLdcI4(9))) {
+            ILLabel label = null;
 
-				return;
-			}
+            if (!cursor.TryGotoPrev(MoveType.Before,
+                instr => instr.MatchBgtUn(out label))) {
 
-			Logger.Log("CrystallineHelper", "Adding Player.orig_Update IL hook for InteractiveChaser");
+                return;
+            }
+
+            cursor.GotoLabel(label);
+
+            Logger.Log("CrystallineHelper", "Adding Player.orig_Update IL hook for InteractiveChaser");
 
 			cursor.Emit(OpCodes.Ldarg_0);
 			cursor.EmitDelegate<Action<Player>>(player => {
