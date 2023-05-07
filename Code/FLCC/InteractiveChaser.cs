@@ -438,6 +438,8 @@ namespace vitmod
 			playerData.Set(vitellaryInteractiveChaserStates, new List<ChaserState>());
 			playerData.Set(vitellaryChaserPosition, self.Position);
 			playerData.Set(vitellaryChaserSpeed, self.Speed);
+			playerData.Set(vitellaryChaserMovementCounter, self.movementCounter);
+			playerData.Set(vitellaryChaserDashed, Vector2.Zero);
 		}
 
 		private static PlayerDeadBody Player_Die(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
