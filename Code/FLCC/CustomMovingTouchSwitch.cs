@@ -316,14 +316,12 @@ namespace vitmod
 		public class BasicSwitch : Component, ISwitch
 		{
 			private Celeste.Switch _switch;
-			private DynData<Celeste.Switch> switchData;
 			private bool persistent;
 			private string persistFlag;
 
 			public BasicSwitch() : base(active: true, visible: false)
 			{
 				_switch = new Celeste.Switch(false);
-				switchData = new DynData<Celeste.Switch>(_switch);
 			}
 
 			public override void Added(Entity entity)
@@ -363,8 +361,8 @@ namespace vitmod
 				}
 			}
 
-			public bool Activated { get => _switch.Activated; set => switchData.Set("Activated", value); }
-			public bool Finished { get => _switch.Finished; set => switchData.Set("Finished", value); }
+			public bool Activated { get => _switch.Activated; set => _switch.Activated = value; }
+			public bool Finished { get => _switch.Finished; set => _switch.Finished = value; }
 
 			public Action OnActivate { get => _switch.OnActivate; set => _switch.OnActivate = value; }
 			public Action OnDeactivate { get => _switch.OnDeactivate; set => _switch.OnDeactivate = value; }

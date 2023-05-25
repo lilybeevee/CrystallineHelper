@@ -6,6 +6,7 @@ using MonoMod.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace vitmod
 {
@@ -25,6 +26,8 @@ namespace vitmod
 		//public static ParticleType P_PressB;
 		//public static ParticleType P_PressAMirror;
 		//public static ParticleType P_PressBMirror;
+
+        private const string vitellaryPairedSwitches = "vitellaryPairedSwitches";
 
 		private EntityID id;
 		private Vector2? target;
@@ -120,12 +123,12 @@ namespace vitmod
 				if (gate != null)
 				{
 					gate.StartOpen();
-					DynData<TempleGate> gateData = new DynData<TempleGate>(gate);
-					var pairedSwitches = gateData.Get<List<PairedDashSwitch>>("pairedSwitches");
+					var gateData = DynamicData.For(gate);
+					var pairedSwitches = gateData.Get<List<PairedDashSwitch>>(vitellaryPairedSwitches);
 					if (pairedSwitches == null)
 					{
 						pairedSwitches = new List<PairedDashSwitch>();
-						gateData.Set("pairedSwitches", pairedSwitches);
+						gateData.Set(vitellaryPairedSwitches, pairedSwitches);
 					}
 					if (!pairedSwitches.Contains(this))
 						pairedSwitches.Add(this);
@@ -220,14 +223,14 @@ namespace vitmod
 				TempleGate gate = GetGate();
 				if (gate != null)
 				{
-					DynData<TempleGate> gateData = new DynData<TempleGate>(gate);
-					if (!gateData.Get<bool>("open"))
+					var gateData = DynamicData.For(gate);
+					if (!gate.open)
 						gate.Open();
-					var pairedSwitches = gateData.Get<List<PairedDashSwitch>>("pairedSwitches");
+					var pairedSwitches = gateData.Get<List<PairedDashSwitch>>(vitellaryPairedSwitches);
 					if (pairedSwitches == null)
 					{
 						pairedSwitches = new List<PairedDashSwitch>();
-						gateData.Set("pairedSwitches", pairedSwitches);
+						gateData.Set(vitellaryPairedSwitches, pairedSwitches);
 					}
 					if (!pairedSwitches.Contains(this))
 						pairedSwitches.Add(this);
@@ -255,10 +258,10 @@ namespace vitmod
 
 				if (ClaimedGate != null)
 				{
-					DynData<TempleGate> gateData = new DynData<TempleGate>(ClaimedGate);
-					if (gateData.Get<bool>("open"))
+					var gateData = DynamicData.For(ClaimedGate);
+					if (ClaimedGate.open)
 					{
-						var pairedSwitches = gateData.Get<List<PairedDashSwitch>>("pairedSwitches");
+						var pairedSwitches = gateData.Get<List<PairedDashSwitch>>(vitellaryPairedSwitches);
 						if (pairedSwitches == null || (pairedSwitches != null && !pairedSwitches.Any((e) => e != this)))
 						{
 							ClaimedGate.ClaimedByASwitch = false;

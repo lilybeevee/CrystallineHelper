@@ -78,9 +78,8 @@ namespace vitmod
             player.Speed.Y = 160f;
             player.StateMachine.State = 0;
             player.NaiveMove(new Vector2(0, Bottom - player.Top));
-            DynData<Player> playerData = new DynData<Player>(player);
-            playerData.Set("dashCooldownTimer", dashDisable);
-            
+            player.dashCooldownTimer = dashDisable;
+
             Audio.Play("event:/game/general/thing_booped", Position);
             sprite.Play("flash");
             sprite.Visible = true;

@@ -29,15 +29,13 @@ namespace vitmod
         {
             DashCollisionResults result = orig(self, player, direction);
             bool finalswitch = true;
-            DynData<DashSwitch> switchData = new DynData<DashSwitch>(self);
-            if (switchData.Get<bool>("pressed"))
+            if (self.pressed)
             {
                 foreach (Solid solid in self.SceneAs<Level>().Tracker.GetEntities<Solid>())
                 {
-                    if (solid is DashSwitch)
+                    if (solid is DashSwitch dashSwitch)
                     {
-                        DynData<DashSwitch> otherSwitchData = new DynData<DashSwitch>(solid as DashSwitch);
-                        if (!otherSwitchData.Get<bool>("pressed"))
+                        if (!dashSwitch.pressed)
                         {
                             finalswitch = false;
                             break;

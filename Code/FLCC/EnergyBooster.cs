@@ -11,6 +11,7 @@ namespace vitmod
 	[CustomEntity("vitellary/energybooster")]
     public class EnergyBooster : Entity
     {
+        private const string vitellaryInEnergyBooster = "vitellaryInEnergyBooster";
 		private const float RespawnTime = 1f;
 		public static readonly Vector2 playerOffset = new Vector2(0f, -2f);
 
@@ -99,15 +100,14 @@ namespace vitmod
 		{
 			if (respawnTimer <= 0f && cannotUseTimer <= 0f && BoostingPlayer == null)
 			{
-				DynData<Player> playerData = new DynData<Player>(player);
 				cannotUseTimer = 0.45f;
 				player.StateMachine.State = 4;
 				PlayerSpeed = player.Speed;
 				if (player.LiftSpeed != Vector2.Zero)
 					PlayerSpeed += player.LiftSpeed;
 				player.Speed = Vector2.Zero;
-				playerData.Set("boostTarget", Center);
-				playerData.Set("vitellaryInEnergyBooster", this);
+				player.boostTarget = Center;
+                DynamicData.For(player).Set(vitellaryInEnergyBooster, this);
 				Audio.Play("event:/game/04_cliffside/greenbooster_enter", Position);
 				wiggler.Start();
 				sprite.Play("inside");
@@ -189,10 +189,10 @@ namespace vitmod
 			BoostingPlayer = null;
 			if (player != null)
 			{
-				DynData<Player> playerData = new DynData<Player>(player);
-				EnergyBooster currentBooster = playerData.Get<EnergyBooster>("vitellaryInEnergyBooster");
+                DynamicData playerData = DynamicData.For(player);
+                EnergyBooster currentBooster = playerData.Get<EnergyBooster>(vitellaryInEnergyBooster);
 				if (currentBooster == this)
-					playerData.Set<EnergyBooster>("vitellaryInEnergyBooster", null);
+					playerData.Set(vitellaryInEnergyBooster, null);
 				else
 					currentBooster.PlayerSpeed = PlayerSpeed;
 			}
@@ -288,14 +288,14 @@ namespace vitmod
 
 		private static void Player_CallDashEvents(On.Celeste.Player.orig_CallDashEvents orig, Player self)
 		{
-			DynData<Player> playerData = new DynData<Player>(self);
-			if (!playerData.Get<bool>("calledDashEvents"))
+			DynamicData playerData = DynamicData.For(self);
+			if (!self.calledDashEvents)
 			{
-				var booster = playerData.Get<EnergyBooster>("vitellaryInEnergyBooster");
+				var booster = playerData.Get<EnergyBooster>(vitellaryInEnergyBooster);
 				if (booster != null)
 				{
 					booster.PlayerBoosted(self, self.DashDir);
-					playerData.Set("calledDashEvents", true);
+                    self.calledDashEvents = true;
 				}
 				else
 				{
@@ -309,11 +309,9 @@ namespace vitmod
 			PlayerDeadBody body = orig(self, direction, evenIfInvincible, registerDeathInStats);
 			if (body != null)
 			{
-				DynData<Player> playerData = new DynData<Player>(self);
-				EnergyBooster booster = playerData.Get<EnergyBooster>("vitellaryInEnergyBooster");
-				if (booster != null)
-					booster.PlayerDied();
-			}
+				EnergyBooster booster = DynamicData.For(self).Get<EnergyBooster>(vitellaryInEnergyBooster);
+                booster?.PlayerDied();
+            }
 			return body;
 		}
 	}

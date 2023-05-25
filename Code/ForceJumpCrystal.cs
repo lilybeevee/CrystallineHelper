@@ -166,11 +166,10 @@ namespace vitmod
 
         private void OnPlayer(Player player)
         {
-            DynData<Player> playerData = new DynData<Player>(player);
             player.StateMachine.State = 0;
             if (player.DashAttacking)
             {
-                if (playerData.Get<bool>("SuperWallJumpAngleCheck"))
+                if (player.SuperWallJumpAngleCheck)
                 {
                     if ((bool)m_WallJumpCheck.Invoke(player, new object[] { -1 }))
                     {
@@ -278,7 +277,7 @@ namespace vitmod
         public static ParticleType P_Glow;
 
         public static ParticleType P_Regen;
-        
+
         public static ParticleType P_Shatter;
 
         //functions for making player jump

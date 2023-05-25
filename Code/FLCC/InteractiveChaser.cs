@@ -18,8 +18,13 @@ namespace vitmod
 {
 	[Tracked]
 	[CustomEntity("vitellary/interactivechaser")]
-	public class InteractiveChaser : Entity
-	{
+	public class InteractiveChaser : Entity {
+        private const string vitellaryInteractiveChaserStates = "vitellaryInteractiveChaserStates";
+        private const string vitellaryChaserPosition = "vitellaryChaserPosition";
+        private const string vitellaryChaserMovementCounter = "vitellaryChaserMovementCounter";
+        private const string vitellaryChaserSpeed = "vitellaryChaserSpeed";
+        private const string vitellaryChaserDashed = "vitellaryChaserDashed";
+
 		public static readonly Color HairColor = Calc.HexToColor("9B3FB5");
 
 		public PlayerSprite Sprite;
@@ -313,7 +318,7 @@ namespace vitmod
 		{
 			if (!player.Dead)
 			{
-				var chaserStates = new DynData<Player>(player).Get<List<ChaserState>>("vitellaryInteractiveChaserStates");
+				var chaserStates = DynamicData.For(player).Get<List<ChaserState>>(vitellaryInteractiveChaserStates);
 				bool flag = false;
 				foreach (ChaserState chaserState in chaserStates)
 				{
@@ -353,7 +358,7 @@ namespace vitmod
 			//On.Celeste.Actor.Update += Actor_Update;
 			On.Celeste.Player.UpdateChaserStates += Player_UpdateChaserStates;
 			On.Celeste.Player.OnTransition += Player_OnTransition;
-			
+
 			playerOrigUpdateHook = new ILHook(typeof(Player).GetMethod("orig_Update", BindingFlags.Public | BindingFlags.Instance), Player_orig_Update);
 			playerOrigUpdateHook.Apply();
 		}
@@ -366,7 +371,7 @@ namespace vitmod
 			//On.Celeste.Actor.Update -= Actor_Update;
 			On.Celeste.Player.UpdateChaserStates -= Player_UpdateChaserStates;
 			On.Celeste.Player.OnTransition -= Player_OnTransition;
-			
+
 			playerOrigUpdateHook.Dispose();
 		}
 
@@ -382,7 +387,7 @@ namespace vitmod
 
 		private static void Player_OnTransition(On.Celeste.Player.orig_OnTransition orig, Player self)
 		{
-			var chaserStates = new DynData<Player>(self).Get<List<ChaserState>>("vitellaryInteractiveChaserStates");
+			var chaserStates = DynamicData.For(self).Get<List<ChaserState>>(vitellaryInteractiveChaserStates);
 			chaserStates.Clear();
 			orig(self);
 		}
@@ -411,31 +416,31 @@ namespace vitmod
 
 			cursor.Emit(OpCodes.Ldarg_0);
 			cursor.EmitDelegate<Action<Player>>(player => {
-				var playerData = new DynData<Player>(player);
-				playerData.Set("vitellaryChaserPosition", player.Position);
-				playerData.Set("vitellaryChaserMovementCounter", new DynData<Actor>(player).Get<Vector2>("movementCounter"));
-				playerData.Set("vitellaryChaserSpeed", player.Speed);
+                var playerData = DynamicData.For(player);
+				playerData.Set(vitellaryChaserPosition, player.Position);
+				playerData.Set(vitellaryChaserMovementCounter, player.movementCounter);
+				playerData.Set(vitellaryChaserSpeed, player.Speed);
 				if (player.DashAttacking && player.Speed.Length() > 0f)
-					playerData.Set("vitellaryChaserDashed", player.DashDir);
+					playerData.Set(vitellaryChaserDashed, player.DashDir);
 			});
 		}
 
 		private static void Player_Update(On.Celeste.Player.orig_Update orig, Player self)
 		{
-			new DynData<Player>(self).Set("vitellaryChaserDashed", Vector2.Zero);
+            DynamicData.For(self).Set(vitellaryChaserDashed, Vector2.Zero);
 			orig(self);
 		}
 
 		private static void Player_ctor(On.Celeste.Player.orig_ctor orig, Player self, Vector2 position, PlayerSpriteMode spriteMode)
 		{
 			orig(self, position, spriteMode);
-			var playerData = new DynData<Player>(self);
-			playerData.Set("vitellaryInteractiveChaserStates", new List<ChaserState>());
-			playerData.Set("vitellaryChaserPosition", self.Position);
-			playerData.Set("vitellaryChaserSpeed", self.Speed);
-            playerData.Set("vitellaryChaserMovementCounter", new DynData<Actor>(self).Get<Vector2>("movementCounter"));
-            playerData.Set("vitellaryChaserDashed", Vector2.Zero);
-        }
+			var playerData = DynamicData.For(self);
+			playerData.Set(vitellaryInteractiveChaserStates, new List<ChaserState>());
+			playerData.Set(vitellaryChaserPosition, self.Position);
+			playerData.Set(vitellaryChaserSpeed, self.Speed);
+			playerData.Set(vitellaryChaserMovementCounter, self.movementCounter);
+			playerData.Set(vitellaryChaserDashed, Vector2.Zero);
+		}
 
 		private static PlayerDeadBody Player_Die(On.Celeste.Player.orig_Die orig, Player self, Vector2 direction, bool evenIfInvincible, bool registerDeathInStats)
 		{
@@ -450,7 +455,7 @@ namespace vitmod
 			if (chasers.Count > 0)
 			{
 				var maxDelay = chasers.Max(e => (e as InteractiveChaser).FollowDelay);
-				var chaserStates = new DynData<Player>(self).Get<List<ChaserState>>("vitellaryInteractiveChaserStates");
+				var chaserStates = DynamicData.For(self).Get<List<ChaserState>>(vitellaryInteractiveChaserStates);
 				while (chaserStates.Count > 0 && self.Scene.TimeActive - chaserStates[0].TimeStamp > maxDelay)
 					chaserStates.RemoveAt(0);
 				chaserStates.Add(new ChaserState(self));
@@ -480,28 +485,22 @@ namespace vitmod
 			public GrabState GrabState { get; set; }
 			public int State { get; set; }
 			public string[] Blacklist { get; set; }
-			
-			private DynData<Player> baseData;
-			private DynData<Actor> actorData;
+
 			private List<Component> newComponents;
 
 			public DummyPlayer(Vector2 position, Vector2 mirror, string[] blacklist) : base(position, PlayerSpriteMode.Badeline)
 			{
-				baseData = new DynData<Player>(this);
-				actorData = new DynData<Actor>(this);
-				var hitboxes = new string[] { "normalHitbox", "duckHitbox", "normalHurtbox", "duckHurtbox" };
-				foreach (var hitboxName in hitboxes)
-				{
-					var hitbox = baseData.Get<Hitbox>(hitboxName);
-					hitbox.Center *= mirror;
-				}
+                normalHitbox.Center *= mirror;
+                duckHitbox.Center *= mirror;
+                normalHurtbox.Center *= mirror;
+                duckHurtbox.Center *= mirror;
 				Blacklist = blacklist;
 			}
 
 			public override void Added(Scene scene)
 			{
-				new DynData<Entity>(this).Set("Scene", scene);
-				baseData.Set("level", scene as Level);
+                Scene = scene;
+                level = scene as Level;
 				Dashes = MaxDashes;
 
 				newComponents = new List<Component>();
@@ -515,15 +514,14 @@ namespace vitmod
 					component.Update();
 
 				var platform = (Platform)CollideFirst<Solid>(Position + Vector2.UnitY) ?? (Platform)CollideFirstOutside<JumpThru>(Position + Vector2.UnitY);
-				if (platform != null)
-				{
-					baseData.Set("onGround", true);
-					baseData.Set("OnSafeGround", platform.Safe);
+				if (platform != null) {
+                    onGround = true;
+                    OnSafeGround = platform.Safe;
 				}
 				else
 				{
-					baseData.Set("onGround", false);
-					baseData.Set("OnSafeGround", false);
+                    onGround = false;
+                    OnSafeGround = false;
 				}
 
 				UpdateCarry();
@@ -536,11 +534,11 @@ namespace vitmod
 				GrabState = state.GrabState;
 				Facing = state.Facing;
 				DashDir = state.DashDir;
-				baseData.Set("dashAttackTimer", DashDir != Vector2.Zero ? 1f : 0f);
+                dashAttackTimer = DashDir != Vector2.Zero ? 1f : 0f;
 				if (DashDir != Vector2.Zero)
 				{
 					Position = state.EarlyPosition;
-					actorData.Set("movementCounter", state.MovementCounter);
+                    movementCounter = state.MovementCounter;
 					MoveH(state.Speed.X * state.DeltaTime, OnCollideH);
 					MoveV(state.Speed.Y * state.DeltaTime, OnCollideV);
 				}
@@ -566,9 +564,9 @@ namespace vitmod
 							Vector2 control = new Vector2(begin.X + Math.Sign(begin.X) * 2f, -14f);
 							SimpleCurve curve = new SimpleCurve(begin, end, control);
 
-							baseData.Set("carryOffset", begin);
+                            carryOffset = begin;
 							var tween = Tween.Create(Tween.TweenMode.Oneshot, Ease.CubeInOut, 0.16f, true);
-							tween.OnUpdate = (t) => baseData.Set("carryOffset", curve.GetPoint(t.Eased));
+							tween.OnUpdate = (t) => carryOffset = curve.GetPoint(t.Eased);
 							AddNew(tween);
 						}
 					}
@@ -586,7 +584,7 @@ namespace vitmod
 				}
 
 				var collider = Collider;
-				Collider = baseData.Get<Hitbox>("hurtbox");
+				Collider = hurtbox;
 				foreach (PlayerCollider playerCollider in Scene.Tracker.GetComponents<PlayerCollider>())
 				{
 					if (playerCollider.Entity == null || !Blacklist.Any((s) => s == playerCollider.Entity.GetType().Name))
@@ -669,26 +667,26 @@ namespace vitmod
 
 			public ChaserState(Player player)
 			{
-				var playerData = new DynData<Player>(player);
+				var playerData = DynamicData.For(player);
 				Exists = true;
 				Bottom = player.BottomCenter;
 				Position = player.Position;
 				TimeStamp = player.Scene.TimeActive;
 				Animation = player.Sprite.CurrentAnimationID;
 				Facing = player.Facing;
-				OnGround = playerData.Get<bool>("onGround");
+				OnGround = player.onGround;
 				HairColor = player.Hair.Color;
 				Depth = player.Depth;
 				Scale = new Vector2(Math.Abs(player.Sprite.Scale.X) * (float)player.Facing, player.Sprite.Scale.Y);
-				EarlyPosition = playerData.Get<Vector2>("vitellaryChaserPosition");
-				MovementCounter = playerData.Get<Vector2>("vitellaryChaserMovementCounter");
-				Speed = playerData.Get<Vector2>("vitellaryChaserSpeed");
-				DashDir = playerData.Get<Vector2>("vitellaryChaserDashed");
+				EarlyPosition = playerData.Get<Vector2>(vitellaryChaserPosition);
+				MovementCounter = playerData.Get<Vector2>(vitellaryChaserMovementCounter);
+				Speed = playerData.Get<Vector2>(vitellaryChaserSpeed);
+				DashDir = playerData.Get<Vector2>(vitellaryChaserDashed);
 				DeltaTime = Engine.DeltaTime;
 				Ducking = player.Ducking;
 				State = player.StateMachine.State;
 				GrabState = player.Ducking ? GrabState.Drop : ((Input.Grab.Check && DashDir == Vector2.Zero) ? GrabState.Held : (Input.MoveY == 1 ? GrabState.Drop : GrabState.None));
-				List<Player.ChaserStateSound> activeSounds = playerData.Get<List<Player.ChaserStateSound>>("activeSounds");
+				List<Player.ChaserStateSound> activeSounds = player.activeSounds;
 				Sounds = Math.Min(5, activeSounds.Count);
 				sound0 = ((Sounds > 0) ? activeSounds[0] : default);
 				sound1 = ((Sounds > 1) ? activeSounds[1] : default);

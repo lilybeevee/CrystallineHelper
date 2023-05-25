@@ -20,12 +20,8 @@ namespace vitmod
         public override void Awake(Scene scene)
         {
             base.Awake(scene);
-            CassetteBlockManager cassette = scene.Tracker.GetEntity<CassetteBlockManager>();
-            if (cassette != null)
-            {
-                cassetteData = new DynData<CassetteBlockManager>(cassette);
-            }
-            else
+            cassetteBlockManager = scene.Tracker.GetEntity<CassetteBlockManager>();
+            if (cassetteBlockManager == null)
             {
                 RemoveSelf();
             }
@@ -34,9 +30,9 @@ namespace vitmod
         public override void Update()
         {
             base.Update();
-            if (cassetteData != null)
+            if (cassetteBlockManager != null)
             {
-                int index = cassetteData.Get<int>("currentIndex");
+                int index = cassetteBlockManager.currentIndex;
                 Session session = SceneAs<Level>().Session;
                 switch (index)
                 {
@@ -68,7 +64,7 @@ namespace vitmod
             }
         }
 
-        private DynData<CassetteBlockManager> cassetteData;
+        private CassetteBlockManager cassetteBlockManager;
 
         private string blueFlag;
         private string pinkFlag;

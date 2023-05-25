@@ -41,8 +41,7 @@ namespace vitmod
             DashCollisionResults result = orig(self, player, direction);
             if (self is DeadlyDashSwitch)
             {
-                DynData<DashSwitch> switchData = new DynData<DashSwitch>(self);
-                if (!switchData.Get<bool>("pressed"))
+                if (!self.pressed)
                 {
                     player.Die(Vector2.Clamp(player.Center - self.Center, -Vector2.One, Vector2.One));
                 }

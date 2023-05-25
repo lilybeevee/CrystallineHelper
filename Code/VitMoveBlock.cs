@@ -851,9 +851,8 @@ namespace vitmod
 					firstHit = false;
 				};
 			}
-			protected override void OnSquish(CollisionData data)
-			{
-			}
+			public override void OnSquish(CollisionData data) { }
+
 			public VitMoveBlock.Debris Init(Vector2 position, Vector2 center, Vector2 returnTo)
 			{
 				Collidable = true;
