@@ -227,7 +227,7 @@ namespace vitmod
 
         private float privateTimeScale;
 
-        public static string[] entitiesToIgnore;
+        public static string[] entitiesToIgnore = new string[0];
 
         public static float timeScaleToSet = 0f;
 
