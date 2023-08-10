@@ -21,7 +21,7 @@ namespace vitmod
         public static void Load()
         {
             // On.Celeste.Player.StartDash += Player_StartDash;
-            hook = new Hook(typeof(Player).GetProperty("CanDash", BindingFlags.Public | BindingFlags.Instance).GetMethod, Player_CanDash);
+            hook = new Hook(typeof(Player).GetProperty("CanDash", BindingFlags.Public | BindingFlags.Instance).GetMethod, typeof(NoDashTrigger).GetMethod("Player_CanDash", BindingFlags.Public | BindingFlags.Static));
             hook.Apply();
         }
 
