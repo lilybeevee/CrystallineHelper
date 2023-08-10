@@ -198,6 +198,7 @@ entities.vitellary/custompuffer.attributes.description.outlineColor=The color of
 entities.vitellary/custompuffer.attributes.description.returnToStart=Whether the puffer will respawn at its starting position.
 entities.vitellary/custompuffer.attributes.description.holdFlip=Whether the puffer will flip with the player when held.
 entities.vitellary/custompuffer.attributes.description.boostMode=The way the puffer's explosion should affect the player.\nSet Speed: Default puffer behavior, sets the player's speed to the launch speed in the angle specified.\nRedirect Speed: If the player has a greater speed than the launch speed specified, apply that speed to the new angle instead.\nRedirect + Add Speed: Takes the player's current speed and redirects it, then adds the puffer's launch speed as well.
+entities.vitellary/custompuffer.attributes.description.legacyBoost=Whether the puffer boost should use the older, less lenient method of checking player input (only accepting input before the freeze frames, rather than after).
 
 # Energy Booster
 entities.vitellary/energybooster.attributes.description.behaveLikeDash=Whether the speed resets after the initial boost unless dashing down diagonal.
