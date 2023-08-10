@@ -1,4 +1,5 @@
 ﻿using Celeste;
+using Celeste.Mod;
 using Celeste.Mod.Entities;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -74,6 +75,7 @@ namespace vitmod
 		private Color outlineColor = Color.White;
 		private bool canUpdateHome = false;
 		private bool holdFlip = false;
+        private bool legacyBoost = true;
 
 		public CustomPuffer(Vector2 position, bool faceRight, float angle = 0f, float radius = 32f, float launchSpeed = 280f, string spriteName = "pufferFish")
 			: base(position)
@@ -129,6 +131,7 @@ namespace vitmod
 			canUpdateHome = !data.Bool("returnToStart", true);
 			holdFlip = data.Bool("holdFlip");
 			boostMode = data.Enum("boostMode", BoostModes.SetSpeed);
+            legacyBoost = data.Bool("legacyBoost", true);
 
 			if (data.Bool("holdable"))
 			{
@@ -794,8 +797,13 @@ namespace vitmod
 			}
 			if (Input.MoveX.Value == Math.Sign(player.Speed.X))
 			{
-				player.Speed.X *= 1.2f;
-			}
+                player.explodeLaunchBoostTimer = 0f;
+                player.Speed.X *= 1.2f;
+            } else if (!legacyBoost) {
+                // not sure why, but this doesn't work if we use 0.01f the same way the vanilla puffer does
+                player.explodeLaunchBoostTimer = 0.02f;
+                player.explodeLaunchBoostSpeed = player.Speed.X * 1.2f;
+            }
 			SlashFx.Burst(player.Center, player.Speed.Angle());
 			if (!player.Inventory.NoRefills)
 			{

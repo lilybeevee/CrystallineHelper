@@ -21,6 +21,7 @@ customPuffer.placements = {
             returnToStart = true,
             holdFlip = false,
             boostMode = "SetSpeed",
+            legacyBoost = false,
         }
     },
     {
@@ -42,6 +43,7 @@ customPuffer.placements = {
             returnToStart = true,
             holdFlip = false,
             boostMode = "SetSpeed",
+            legacyBoost = false,
         }
     }
 }
