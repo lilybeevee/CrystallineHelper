@@ -14,6 +14,7 @@ interactiveChaser.placements = {
         blacklist = "",
         harmful = true,
         canChangeMusic = false,
+        sendToPlayer = false,
     }
 }
 interactiveChaser.fieldInformation = {
