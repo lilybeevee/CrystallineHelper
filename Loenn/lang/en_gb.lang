@@ -64,6 +64,7 @@ entities.vitellary/triggerbeam.placements.name.beam_down=Trigger Beam (Down)
 entities.vitellary/triggerbeam.placements.name.beam_left=Trigger Beam (Left)
 entities.vitellary/triggerbeam.placements.name.beam_up=Trigger Beam (Up)
 entities.vitellary/dashcodecontroller.placements.name.dash_code_controller=Dash Code Controller
+entities.vitellary/roomname.placements.name.room_name=Room Name Controller
 
 # Triggers
 
@@ -97,6 +98,7 @@ triggers.vitellary/triggertrigger.placements.name.onsolid=Trigger Trigger (Touch
 triggers.vitellary/triggertrigger.placements.name.onentityenter=Trigger Trigger (Entity Entered)
 triggers.vitellary/bombtimer.placements.name.bomb_timer=Bomb Timer Trigger
 triggers.vitellary/dropholdables.placements.name.drop_holdables=Drop Holdable Trigger
+triggers.vitellary/roomnametrigger.placements.name.room_name_trigger=Room Name Trigger
 
 # Effects
 
@@ -288,6 +290,9 @@ entities.vitellary/cassetteflags.attributes.description.pinkFlag=The flag to ena
 entities.vitellary/cassetteflags.attributes.description.yellowFlag=The flag to enable while the cassette cycle is yellow.
 entities.vitellary/cassetteflags.attributes.description.greenFlag=The flag to enable while the cassette cycle is green.
 
+# Room Name Controller
+entities.vitellary/roomname.attributes.description.roomName=The text to appear at the bottom of the screen.
+
 # Remote Trigger
 entities.vitellary/remotetrigger.attributes.description.value=The Linked Move Block group the trigger activates.
 
@@ -376,6 +381,9 @@ triggers.vitellary/bombtimer.attributes.description.timer=Countdown duration unt
 triggers.vitellary/bombtimer.attributes.description.startDirection=Direction the player has to move inside the trigger to start the timer.
 triggers.vitellary/bombtimer.attributes.description.changeRespawn=Whether the respawn point is set to the nearest one after activing the trigger.
 triggers.vitellary/bombtimer.attributes.description.resetOnDeath=Whether the player returns to the start after ANY death.
+
+# Room Name Trigger
+triggers.vitellary/roomnametrigger.attributes.description.roomName=The text to appear at the bottom of the screen.
 
 # Flag Sequence On Spawn Controller
 entities.vitellary/flagsequencecontroller.attributes.description.startNumber=The first number to start the sequence.
