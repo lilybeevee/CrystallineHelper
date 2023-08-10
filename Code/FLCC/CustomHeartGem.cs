@@ -327,11 +327,9 @@ namespace vitmod
 				Audio.Play("event:/game/general/crystalheart_bounce", Position);
 				bounceSfxDelay = 0.1f;
 			}
-			player.PointBounce(base.Center);
-			if (dashCount != 1)
-            {
-				player.Dashes = dashCount;
-            }
+            var dashes = Math.Max(player.Dashes, dashCount);
+            player.PointBounce(base.Center);
+            player.Dashes = dashes;
 			moveWiggler.Start();
 			ScaleWiggler.Start();
 			moveWiggleDir = (base.Center - player.Center).SafeNormalize(Vector2.UnitY);
@@ -365,7 +363,7 @@ namespace vitmod
 				}
 				if (!endLevel)
 				{
-					player?.RefillDash();
+                    player.Dashes = Math.Max(player.Dashes, dashCount);
 				}
 				if (slowdown)
 				{
