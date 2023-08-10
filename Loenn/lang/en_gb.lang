@@ -261,6 +261,7 @@ entities.vitellary/interactivechaser.attributes.description.blacklist=Comma-sepa
 entities.vitellary/interactivechaser.attributes.description.flag=Flag that will activate badeline.
 entities.vitellary/interactivechaser.attributes.description.harmful=Whether badeline kills the player on contact.
 entities.vitellary/interactivechaser.attributes.description.canChangeMusic=Whether the music gets set to the badeline chase music.
+entities.vitellary/interactivechaser.attributes.description.sendToPlayer=If true, interactions with entities will be sent to the player instead of applying to the chaser.
 
 # Flag Kevin
 entities.vitellary/flagkevin.attributes.description.customPath=Path to the kevin sprite to use. Relative to Atlases/Gameplay/objects.

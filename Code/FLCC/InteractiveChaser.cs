@@ -49,8 +49,9 @@ namespace vitmod
 		private float startDelay;
 		private Vector2 mirror;
 		private string[] blacklist;
+        public bool sendPlayer;
 
-		public InteractiveChaser(EntityData data, Vector2 offset) : base(data.Position + offset)
+        public InteractiveChaser(EntityData data, Vector2 offset) : base(data.Position + offset)
 		{
 			canChangeMusic = data.Bool("canChangeMusic");
 			harmful = data.Bool("harmful", true);
@@ -59,6 +60,7 @@ namespace vitmod
 			startDelay = data.Float("startDelay", 0f);
 			mirror = MirrorScales[data.Enum("mirroring", MirrorMode.None)];
 			blacklist = data.Attr("blacklist").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            sendPlayer = data.Bool("sendToPlayer", false);
 
 			Hovering = false;
 			hoveringTimer = 0f;
@@ -85,7 +87,7 @@ namespace vitmod
 		{
 			base.Added(scene);
 			Add(new Coroutine(StartChasingRoutine(scene as Level)));
-			scene.Add(dummyPlayer = new DummyPlayer(Position, mirror, blacklist));
+			scene.Add(dummyPlayer = new DummyPlayer(this, Position, mirror, blacklist));
 		}
 
 		public override void Removed(Scene scene)
@@ -488,8 +490,11 @@ namespace vitmod
 
 			private List<Component> newComponents;
 
-			public DummyPlayer(Vector2 position, Vector2 mirror, string[] blacklist) : base(position, PlayerSpriteMode.Badeline)
+            private InteractiveChaser Chaser;
+
+			public DummyPlayer(InteractiveChaser chaser, Vector2 position, Vector2 mirror, string[] blacklist) : base(position, PlayerSpriteMode.Badeline)
 			{
+                Chaser = chaser;
                 normalHitbox.Center *= mirror;
                 duckHitbox.Center *= mirror;
                 normalHurtbox.Center *= mirror;
@@ -587,8 +592,27 @@ namespace vitmod
 				Collider = hurtbox;
 				foreach (PlayerCollider playerCollider in Scene.Tracker.GetComponents<PlayerCollider>())
 				{
-					if (playerCollider.Entity == null || !Blacklist.Any((s) => s == playerCollider.Entity.GetType().Name))
-						playerCollider.Check(this);
+					if (!(playerCollider.Entity is InteractiveChaser) && !Blacklist.Any((s) => s == playerCollider.Entity.GetType().Name)) {
+                        if (Chaser.sendPlayer) {
+                            // implement collision checking ourself, so that we can specify what Player to pass into OnCollide
+                            Collider checkCollider = playerCollider.Collider;
+                            if (checkCollider == null) {
+                                if (CollideCheck(playerCollider.Entity)) {
+                                    playerCollider.OnCollide(Chaser.player);
+                                }
+                            } else {
+                                Collider entityCollider = playerCollider.Entity.Collider;
+                                playerCollider.Entity.Collider = checkCollider;
+                                bool flag = CollideCheck(playerCollider.Entity);
+                                playerCollider.Entity.Collider = entityCollider;
+                                if (flag) {
+                                    playerCollider.OnCollide(Chaser.player);
+                                }
+                            }
+                        } else {
+                            playerCollider.Check(this);
+                        }
+                    }
 				}
 				Collider = collider;
 
