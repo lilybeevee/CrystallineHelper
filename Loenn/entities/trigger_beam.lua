@@ -35,6 +35,7 @@ triggerBeam.minimumSize = {8, 8}
 triggerBeam.canResize = {true, true}
 triggerBeam.nodeLimits = {0, -1}
 triggerBeam.nodeLineRenderType = "fan"
+triggerBeam.nodeVisibility = "never"
 
 local vectors = {
     Right = {1, 0},
@@ -127,17 +128,24 @@ function triggerBeam.selection(room, entity)
         maxLength = math.max(getLength(bx + ox, by + oy, dx, dy, room), maxLength)
     end
 
+    local main
     if dx == 0 then
         if dy < 0 then
             y -= maxLength
         end
-        return utils.rectangle(x, y, size, maxLength)
+        main = utils.rectangle(x, y, size, maxLength)
     else
         if dx < 0 then
             x -= maxLength
         end
-        return utils.rectangle(x, y, maxLength, size)
+        main = utils.rectangle(x, y, maxLength, size)
     end
+    local nodes = entity.nodes or {{x = 0, y = 0}, {x = 0, y = 0}}
+    local rects = {}
+    for i, node in ipairs(nodes) do
+        table.insert(rects, utils.rectangle(node.x, node.y, 8, 8))
+    end
+    return main, rects
 end
 
 return triggerBeam
