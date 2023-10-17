@@ -57,15 +57,23 @@ end
 
 function pairedSwitch.selection(room, entity)
     local x, y = entity.x or 0, entity.y or 0
+    local w, h = 0, 0
     if entity.direction == "Right" then
-        return utils.rectangle(x,y,8,16)
+        w, h = 8, 16
     elseif entity.direction == "Down" then
-        return utils.rectangle(x,y,16,8)
+        w, h = 16, 8
     elseif entity.direction == "Up" then
-        return utils.rectangle(x,y,16,8)
+        w, h = 16, 8
     else
-        return utils.rectangle(x,y,8,16)
+        w, h = 8, 16
     end
+
+    local nodes = entity.nodes or {{x = 0, y = 0}, {x = 0, y = 0}}
+    local rects = {}
+    for i, node in ipairs(nodes) do
+        table.insert(rects, utils.rectangle(node.x, node.y, w, h))
+    end
+    return utils.rectangle(x, y, w, h), rects
 end
 
 return pairedSwitch
