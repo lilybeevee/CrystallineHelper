@@ -46,6 +46,7 @@ namespace vitmod {
             requiredSpeed = data.Float("requiredSpeed", 0f);
             waitTime = data.Float("timeToWait", 0f);
             coreMode = data.Enum("coreMode", Session.CoreModes.None);
+            inputType = data.Enum("inputType", InputTypes.Grab);
             if (string.IsNullOrEmpty(data.Attr("entityType", ""))) {
                 collideType = data.Attr("entityTypeToCollide", "Celeste.Strawberry");
             } else {
@@ -281,6 +282,37 @@ namespace vitmod {
                         }
                     }
                     break;
+                case ActivationTypes.OnInput:
+                    switch (inputType) {
+                        case InputTypes.Grab:
+                            result = Input.Grab.Pressed;
+                            break;
+                        case InputTypes.Jump:
+                            result = Input.Jump.Pressed;
+                            break;
+                        case InputTypes.Dash:
+                            result = Input.Dash.Pressed;
+                            break;
+                        case InputTypes.Interact:
+                            result = Input.Talk.Pressed;
+                            break;
+                        case InputTypes.CrouchDash:
+                            result = Input.CrouchDash.Pressed;
+                            break;
+                        default:
+                            Vector2 aim = Input.Aim.Value.FourWayNormal();
+                            if (inputType == InputTypes.Left && aim.X < 0f)
+                                result = true;
+                            else if (inputType == InputTypes.Right && aim.X > 0f)
+                                result = true;
+                            else if (inputType == InputTypes.Down &&  aim.Y > 0f)
+                                result = true;
+                            else if (inputType == InputTypes.Up  && aim.Y < 0f)
+                                result = true;
+
+                            break;
+                    }
+                    break;
                 default:
                     result = false;
                     break;
@@ -449,6 +481,7 @@ namespace vitmod {
         private float hasWaited;
         private int collideCount;
         private Session.CoreModes coreMode;
+        private InputTypes inputType;
         private List<Entity> entitiesInside;
         private string collideSolid;
         public bool externalActivation;
@@ -483,10 +516,22 @@ namespace vitmod {
             OnInteraction,
             OnSolid,
             OnEntityEnter,
+            OnInput,
         };
         public enum RandomizationTypes {
             FileTimer,
             ChapterTimer
+        };
+        public enum InputTypes {
+            Left,
+            Right,
+            Up,
+            Down,
+            Jump,
+            Dash,
+            Grab,
+            Interact,
+            CrouchDash,
         };
         private static List<ActivationTypes> bypassGlobal = new List<ActivationTypes>() {
             ActivationTypes.OnHoldableEnter,
