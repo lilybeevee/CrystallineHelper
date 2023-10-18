@@ -13,7 +13,8 @@ timedFadeTrigger.placements = {
     {
         name = "timed_fade_trigger",
         data = {
-            time = 1.0
+            time = 1.0,
+            oneUse = false,
         }
     }
 }

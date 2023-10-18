@@ -377,6 +377,7 @@ triggers.vitellary/bloomstrengthtrigger.attributes.description.positionMode=Dete
 
 # Timed Fade Trigger
 triggers.vitellary/timedfadetrigger.attributes.description.time=How long to fade from the From value to the To value.
+triggers.vitellary/timedfadetrigger.attributes.description.oneUse=Whether the trigger should only work once.\nWas previously default behavior.
 
 # Bomb Timer Trigger
 triggers.vitellary/bombtimer.attributes.description.sound=Sound to play at the specified time (blank for none).

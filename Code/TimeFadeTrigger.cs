@@ -30,6 +30,7 @@ namespace vitmod
         {
             nodes = data.NodesOffset(offset);
             totalTime = data.Float("time", 1f);
+            oneUse = data.Bool("oneUse", true);
         }
 
         public override void Awake(Scene scene)
@@ -59,6 +60,12 @@ namespace vitmod
                     if (triggerToFade != null)
                     {
                         triggerToFade.OnLeave(playerInside);
+                        if (oneUse) {
+                            RemoveSelf();
+                        } else {
+                            playerInside = null;
+                            activatedTimer = 0;
+                        }
                     }
                 }
                 else
@@ -96,6 +103,7 @@ namespace vitmod
         private Vector2[] nodes;
 
         public float totalTime;
+        public bool oneUse;
 
         public Trigger triggerToFade;
 
